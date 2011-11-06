@@ -20,6 +20,7 @@
 #include "htc.h"
 #include "timer_hardware.h"
 #include "binary_clock.h"
+#include "wwvb.h"
 
 //CPU Frequency
 #define FOSC 1000000UL
@@ -32,7 +33,7 @@ void interrupt isr (void) {
     if(TMR1GIE && TMR1GIF) {
         //Used to analyze individual bits
         TMR1GIF = 0;
-        //RB6 = !RB6;
+        RB6 = !RB6;
         TMR1 = 0;
 
         //First rising edge, reset system tick
@@ -43,7 +44,7 @@ void interrupt isr (void) {
     if(TMR2IE && TMR2IF) {
         //Used to keep track of frame postition
         TMR2IF = 0;
-        //RB7 = !RB7;
+        RB7 = !RB7;
 
         if(tick == 1000) {
             //Clear Frame marker

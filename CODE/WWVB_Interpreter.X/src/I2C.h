@@ -10,24 +10,38 @@
  *            \ \_\  \ \_____\  \ \_\ \ \_\  \ \_\  \ \_____\
  *             \/_/   \/_____/   \/_/  \/_/   \/_/   \/_____/
  *
- * --- Binary Clock Hardware Header ---
+ * --- I2C Communications Header ---
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 2, 2011
+ * Date: Nov 6, 2011
  -----------------------------------------------------------------------------*/
+ 
+//RTC Control address definitions
+#ifdef RTC_DS1307
+#define RTC_WRITE_ADDR 0xD0
+#define RTC_READ_ADDR 0xD1
+#endif
+#ifdef RTC_MCP79400N
+#define RTC_WRITE_ADDR 0xDE
+#define RTC_WRITE_ADDR 0xDF
+#endif
 
-#define HOURS_COL RC5
-#define MINUTES_COL RC4
-#define SECONDS_COL RC2
+//Function Prototypes
+void i2c_setup(void);
 
-#define D1 RC0
-#define D2 RC1
-#define D4 RB4
-#define D8 RB5
-#define D16 RB6
-#define D32 RB7
+void i2c_start(void);
 
-void io_setup(void);
+void i2c_repstart(void);
 
-void write_digit(unsigned char val);
+void i2c_halt(void);
+
+void i2c_ack(void);
+
+void i2c_noack(void);
+
+void i2c_wait(void);
+
+void i2c_transmit(unsigned char data);
+
+unsigned char i2c_recieve(void);
