@@ -1,4 +1,4 @@
-description = <b>EAGLE Design Rules</b>\n<p>\nThe default Design Rules have been set to cover\na wide range of applications. Your particular design\nmay have different requirements, so please make the\nnecessary adjustments and save your customized\ndesign rules under a new name.
+description[en] = <b>EAGLE Design Rules</b>\n<p>\nThe default Design Rules have been set to cover\na wide range of applications. Your particular design\nmay have different requirements, so please make the\nnecessary adjustments and save your customized\ndesign rules under a new name.
 layerSetup = (1*16)
 mtCopper = 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm
 mtIsolate = 1.5mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm
@@ -52,7 +52,7 @@ mlMinStopFrame = 4mil
 mlMaxStopFrame = 4mil
 mlMinCreamFrame = 0mil
 mlMaxCreamFrame = 0mil
-mlViaStopLimit = 25mil
+mlViaStopLimit = 0mil
 srRoundness = 0.000000
 srMinRoundness = 0mil
 srMaxRoundness = 0mil
