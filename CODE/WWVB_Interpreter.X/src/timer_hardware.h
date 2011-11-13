@@ -17,9 +17,14 @@
  * Date: Nov 2, 2011
  -----------------------------------------------------------------------------*/
 
+#ifndef TIMER_HARDWARE_h
+#define TIMER_HARDWARE_h
+
 //System clock frequency
 #define FOSC 1000000UL
 
 //Function Prototypes
 void timer1_init(void);
 void timer2_init(void);
+
+#endif

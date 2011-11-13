@@ -17,6 +17,9 @@
  * Date: Nov 2, 2011
  -----------------------------------------------------------------------------*/
 
+#ifndef WWVB_h
+#define WWVB_h
+
 //Define WWVB Pulse widths
 #define MAX_ERROR 100
 #define MAX_FRAME 400
@@ -24,3 +27,5 @@
 #define MAX_ZERO 1000
 
 unsigned char bit_value(unsigned pulse_length);
+
+#endif

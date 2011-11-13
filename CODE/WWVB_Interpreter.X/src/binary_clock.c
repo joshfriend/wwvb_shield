@@ -23,16 +23,16 @@
 void io_setup(void) {
     //Set outputs and inputs
     TRISA = 0b00011111;
-    TRISB = 0;
+    //TRISB = 0;
     TRISC = 0;
 
     //Turn ADC funcitonality OFF where not used
     ANSELA = 0b00000100;
-    ANSELB = 0;
+    //ANSELB = 0;
     ANSELC = 0;
 }
 
 void write_digit(unsigned char val) {
-    PORTB = (val & 0x3C) << 2;
+    //PORTB = (val & 0x3C) << 2;
     PORTC = (PORTC & 0xFC) | (val & 0x03);
 }

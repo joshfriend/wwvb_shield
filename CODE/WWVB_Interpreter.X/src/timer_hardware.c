@@ -21,19 +21,24 @@
 #include "timer_hardware.h"
 #include "binary_clock.h"
 #include "wwvb.h"
+#include "RTC.h"
+#include "I2C.h"
 
 //CPU Frequency
 #define FOSC 1000000UL
 
 volatile unsigned tick = 0;
 volatile unsigned pulse_length_ms = 0;
+volatile unsigned char state = 0;
 
 void interrupt isr (void) {
     //Timer1 Gate event
     if(TMR1GIE && TMR1GIF) {
         //Used to analyze individual bits
         TMR1GIF = 0;
-        RB6 = !RB6;
+
+        RC3 = !RC3;
+
         TMR1 = 0;
 
         //First rising edge, reset system tick
@@ -44,35 +49,18 @@ void interrupt isr (void) {
     if(TMR2IE && TMR2IF) {
         //Used to keep track of frame postition
         TMR2IF = 0;
-        RB7 = !RB7;
 
         if(tick == 1000) {
-            //Clear Frame marker
-            D1 = 0;
-            //Clear Error indicator
-            D2 = 0;
-            //Clear bitvalue indicator
-            D16 = 0;
+            //Start transmission
+            i2c_start();
 
-            //Compute time in ms from timer count
-            pulse_length_ms = TMR1 >> 5;
+            //Begin transmission in write mode
+            i2c_transmit(RTC_WRITE_ADDR);
 
-            if(bit_value(pulse_length_ms) == 0) {
-                //BINARY ZERO
-                D16 = 0;
-            }
-            else if(bit_value(pulse_length_ms) == 1) {
-                //BINARY ONE
-                D16 = 1;
-            }
-            else if(bit_value(pulse_length_ms) == 2) {
-                //FRAME MARKER
-                D1 = 1;
-            }
-            else {
-                //ERROR
-                D2 = 1;
-            }
+            i2c_transmit(state);
+            state = !state;
+
+            i2c_halt();
 
             tick = 0;
         }

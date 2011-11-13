@@ -16,16 +16,9 @@
  * Instructor: Dr. Andrew Sterian
  * Date: Nov 6, 2011
  -----------------------------------------------------------------------------*/
- 
-//RTC Control address definitions
-#ifdef RTC_DS1307
-#define RTC_WRITE_ADDR 0xD0
-#define RTC_READ_ADDR 0xD1
-#endif
-#ifdef RTC_MCP79400N
-#define RTC_WRITE_ADDR 0xDE
-#define RTC_WRITE_ADDR 0xDF
-#endif
+
+#ifndef I2C_h
+#define I2C_h
 
 //Function Prototypes
 void i2c_setup(void);
@@ -45,3 +38,5 @@ void i2c_wait(void);
 void i2c_transmit(unsigned char data);
 
 unsigned char i2c_recieve(void);
+
+#endif

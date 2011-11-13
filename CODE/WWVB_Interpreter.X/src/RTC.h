@@ -16,7 +16,24 @@
  * Instructor: Dr. Andrew Sterian
  * Date: Nov 7, 2011
  -----------------------------------------------------------------------------*/
- 
+
+#ifndef RTC_h
+#define RTC_h
+
+//RTC Control address definitions
+#ifdef RTC_DS1307
+#define RTC_WRITE_ADDR 0xD0
+#define RTC_READ_ADDR 0xD1
+#endif
+#ifdef RTC_MCP79400N
+#define RTC_WRITE_ADDR 0xDE
+#define RTC_READ_ADDR 0xDF
+#endif
+#ifdef PCF8574
+#define RTC_WRITE_ADDR 0x40
+#define RTC_READ_ADDR 0x41
+#endif
+
 //Function Prototypes
 unsigned char decimal_to_bcd(unsigned char dec);
 
@@ -28,4 +45,8 @@ void stop_rtc();
 
 void set_rtc_time();
 
-void get_rtc_time() ;
+void get_rtc_time();
+
+void rtc_output_en(unsigned char en);
+
+#endif

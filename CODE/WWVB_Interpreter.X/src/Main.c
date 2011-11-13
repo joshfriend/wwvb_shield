@@ -19,8 +19,10 @@
 
 #include "htc.h"
 #include "timer_hardware.h"
-#include "binary_clock.h"
-#include "wwvb.h"
+#include "ct_hardware.h"
+//#include "wwvb.h"
+#include "I2C.h"
+#include "RTC.h"
 
 __CONFIG(FOSC_INTOSC & WDTE_OFF & PWRTE_OFF & MCLRE_ON & CP_OFF & CPD_OFF & BOREN_OFF & CLKOUTEN_OFF & IESO_OFF & FCMEN_OFF);
 __CONFIG(WRT_OFF & PLLEN_OFF & STVREN_OFF & LVP_OFF);
@@ -32,18 +34,17 @@ volatile unsigned char buffer_position = 0;
 volatile unsigned pulse_length_ms=0;
 
 void main(void) {
+    unsigned char en = 0;
+
     setup();
+    io_setup();
     timer1_init();
     timer2_init();
 
-    HOURS_COL = 1;
-    MINUTES_COL = 1;
-    SECONDS_COL = 1;
-
-    write_digit(0);
+    i2c_setup();
 
     while(1) {
-        //write_digit(TMR1H);
+        
     }
 }
 

@@ -17,6 +17,8 @@
  * Date: Nov 6, 2011
  -----------------------------------------------------------------------------*/
 
+#include "htc.h"
+
 void i2c_setup(void) {
     //Disable slew rate control
     SSP1STAT |= 0x80;
@@ -25,53 +27,53 @@ void i2c_setup(void) {
     SSP1CON1 = 0b00101000;
     
     //For a 100kHz CLock at FOSC = 1MHz, SCL pin clock period = ((ADD<7:0> + 1) *4)/FOSC
-    SSP1ADD = 0x0A;
+    SSP1ADD = 0x02;
 }
 
 void i2c_start(void) {
     //Enable start condition
-    SEN = 1;
+    SSP1CON2bits.SEN = 1;
     
     //Wait for start condition to finish
-    while(SEN);
+    while(SSP1CON2bits.SEN);
 }
 
 void i2c_repstart(void) {
     //Enable repeated start condition
-    RSEN = 1;
+    SSP1CON2bits.RSEN = 1;
     
     //Wait for restart condition to finish
-    while(PEN);
+    while(SSP1CON2bits.PEN);
 }
 
 void i2c_halt(void) {
     //Enable stop condition
-    PEN = 1;
+    SSP1CON2bits.PEN = 1;
     
     //Wait for stop condition to finish
-    while(PEN);
+    while(SSP1CON2bits.PEN);
 }
 
 void i2c_ack(void) {
     //Set acknowledge data bit, value 0 is acknowlege
-    ACKDT = 0;
+    SSP1CON2bits.ACKDT = 0;
     
     //Initiate acknowledge sequence
-    ACKEN = 1;
+    SSP1CON2bits.ACKEN = 1;
     
     //Wait for acknowledge sequence to finish
-    while(ACKEN);
+    while(SSP1CON2bits.ACKEN);
 }
 
 void i2c_noack(void) {
     //Set acknowledge data bit, value 1 is non-acknowlege
-    ACKDT = 1;
+    SSP1CON2bits.ACKDT = 1;
     
     //Initiate acknowledge sequence
-    ACKEN = 1;
+    SSP1CON2bits.ACKEN = 1;
     
     //Wait for acknowledge sequence to finish
-    while(ACKEN);
+    while(SSP1CON2bits.ACKEN);
 }
 
 void i2c_wait(void) {
@@ -84,7 +86,7 @@ void i2c_transmit(unsigned char data) {
     SSP1BUF = data;
     
     //Wait for data to send
-    while(BF);
+    while(SSP1STATbits.BF);
     
     i2c_wait();
 }
@@ -93,10 +95,10 @@ unsigned char i2c_recieve(void) {
     unsigned char data;
 
     //Set recieve enable bit
-    RCEN = 1;
+    SSP1CON2bits.RCEN = 1;
     
     //Wait for data buffer to fill
-    while(!BF);
+    while(!SSP1STATbits.BF);
     
     //Store data recieved
     data = SSP1BUF;

@@ -17,6 +17,9 @@
  * Date: Nov 2, 2011
  -----------------------------------------------------------------------------*/
 
+#ifndef BINARY_CLOCK_h
+#define BINARY_CLOCK_h
+
 #define HOURS_COL RC5
 #define MINUTES_COL RC4
 #define SECONDS_COL RC2
@@ -31,3 +34,5 @@
 void io_setup(void);
 
 void write_digit(unsigned char val);
+
+#endif

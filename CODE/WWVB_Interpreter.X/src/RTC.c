@@ -17,8 +17,14 @@
  * Date: Nov 7, 2011
  -----------------------------------------------------------------------------*/
 
+#include "htc.h"
+#include "I2C.h"
+#include "RTC.h"
+
+unsigned char seconds, minutes, hours, weekday, day, month, year;
+
 unsigned char decimal_to_bcd(unsigned char dec) {
-    return (dec/10 * 16) + (dec % 10));
+    return (dec/10 * 16) + (dec % 10);
 }
 
 unsigned char bcd_to_decimal(unsigned char bcd) {
@@ -112,6 +118,23 @@ void get_rtc_time() {
     //End repeated start by non-ack
     i2c_noack();
     
+    //Stop transmission
+    i2c_halt();
+}
+
+void rtc_output_en(unsigned char en) {
+    //Start transmission
+    i2c_start();
+    
+    //Begin transmission in write mode
+    i2c_transmit(RTC_WRITE_ADDR);
+
+    //Send address of output control register
+    i2c_transmit(0x07);
+
+    //Set output enable bit to value of en
+    i2c_transmit(en << 7);
+
     //Stop transmission
     i2c_halt();
 }
