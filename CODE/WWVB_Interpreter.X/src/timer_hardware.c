@@ -19,7 +19,6 @@
 
 #include "htc.h"
 #include "timer_hardware.h"
-#include "binary_clock.h"
 #include "wwvb.h"
 #include "RTC.h"
 #include "I2C.h"
@@ -30,45 +29,6 @@
 volatile unsigned tick = 0;
 volatile unsigned pulse_length_ms = 0;
 volatile unsigned char state = 0;
-
-void interrupt isr (void) {
-    //Timer1 Gate event
-    if(TMR1GIE && TMR1GIF) {
-        //Used to analyze individual bits
-        TMR1GIF = 0;
-
-        RC3 = !RC3;
-
-        TMR1 = 0;
-
-        //First rising edge, reset system tick
-        tick = 0;
-    }
-
-    //Timer2 compare match event
-    if(TMR2IE && TMR2IF) {
-        //Used to keep track of frame postition
-        TMR2IF = 0;
-
-        if(tick == 1000) {
-            //Start transmission
-            i2c_start();
-
-            //Begin transmission in write mode
-            i2c_transmit(RTC_WRITE_ADDR);
-
-            i2c_transmit(state);
-            state = !state;
-
-            i2c_halt();
-
-            tick = 0;
-        }
-        else {
-            tick++;
-        }
-    }
-}
 
 void timer1_init(void) {
     //Timer ON, 1/8 Prescaler, Source = FOSC/4, 2 second range
@@ -84,6 +44,12 @@ void timer1_init(void) {
 
     //Clear interrupt flag
     TMR1GIF = 0;
+
+    //Enable Global interrupts
+    GIE = 1;
+
+    //Enable peripheral interrupts
+    PEIE = 1;
 }
 
 void timer2_init(void) {
@@ -99,4 +65,10 @@ void timer2_init(void) {
 
     //Clear interrupt flag
     TMR2IF = 0;
+
+    //Enable Global interrupts
+    GIE = 1;
+
+    //Enable peripheral interrupts
+    PEIE = 1;
 }

@@ -39,14 +39,14 @@ unsigned char decimal_to_bcd(unsigned char dec);
 
 unsigned char bcd_to_decimal(unsigned char bcd);
 
-void start_rtc();
+void start_rtc(void);
 
-void stop_rtc();
+void stop_rtc(void);
 
-void set_rtc_time();
+void set_rtc_time(void);
 
-void get_rtc_time();
+void get_rtc_time(void);
 
-void rtc_output_en(unsigned char en);
+void rtc_output_ctrl(unsigned char data);
 
 #endif

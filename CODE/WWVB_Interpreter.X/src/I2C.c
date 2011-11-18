@@ -18,6 +18,13 @@
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
+#include <stdlib.h>
+
+#define MAX_tx_buffer_size 30
+
+static unsigned char i2c_tx_buf[MAX_tx_buffer_size] = {0};
+static unsigned char i2c_rx_buf[MAX_tx_buffer_size] = {0};
+static unsigned char tx_buffer_size = 0, rx_buffer_size = 0, buffer_pos = 0;
 
 void i2c_setup(void) {
     //Disable slew rate control
@@ -27,7 +34,16 @@ void i2c_setup(void) {
     SSP1CON1 = 0b00101000;
     
     //For a 100kHz CLock at FOSC = 1MHz, SCL pin clock period = ((ADD<7:0> + 1) *4)/FOSC
-    SSP1ADD = 0x02;
+    SSP1ADD = 0x01;
+
+    //Enable MSSP interrupts
+    SSP1IE = 1;
+
+    //Enable Global interrupts
+    GIE = 1;
+
+    //Enable peripheral interrupts
+    PEIE = 1;
 }
 
 void i2c_start(void) {
@@ -81,7 +97,7 @@ void i2c_wait(void) {
     while (( SSPCON2 & 0x1F) || (SSPSTAT & 0x04));
 }
 
-void i2c_transmit(unsigned char data) {
+void i2c_tx_byte(unsigned char data) {
     //Dump data to be sent into buffer
     SSP1BUF = data;
     
@@ -89,6 +105,47 @@ void i2c_transmit(unsigned char data) {
     while(SSP1STATbits.BF);
     
     i2c_wait();
+}
+
+unsigned char i2c_send_next(void) {
+
+    //Check if slave acknowledged previous transmission
+    if(!ACKSTAT) {
+        //Check to see that buffer position is still in range
+        if(buffer_pos < tx_buffer_size){
+            //Put next byte in buffer
+            SSP1BUF = i2c_tx_buf[buffer_pos++];
+        }
+        else {
+            //Buffer has been sent, send stop condition
+            i2c_halt();
+        }
+    }
+    else {
+        //Slave did not acknowledge, send stop condition
+        i2c_halt();
+    }
+
+    //Return 1 if slave acknowledged, 0 if no-ack
+    return !ACKSTAT;
+}
+
+unsigned char i2c_tx(unsigned char address, unsigned char *data, unsigned char count) {
+    //Initialize bus
+    i2c_start();
+ 
+    buffer_pos = 0;
+
+    //Store transmission size
+    tx_buffer_size = count+1;
+
+    //Put address and data in transmit buffer
+    i2c_tx_buf[0] = address;
+    for(int i = 1;  i <= count; i++)
+        i2c_tx_buf[i] = data[i-1];
+
+    //Start sending first byte of data
+    SSP1BUF = i2c_tx_buf[buffer_pos++];
 }
 
 unsigned char i2c_recieve(void) {

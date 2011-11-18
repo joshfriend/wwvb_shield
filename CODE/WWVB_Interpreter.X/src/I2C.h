@@ -35,7 +35,11 @@ void i2c_noack(void);
 
 void i2c_wait(void);
 
-void i2c_transmit(unsigned char data);
+void i2c_tx_byte(unsigned char data);
+
+unsigned char i2c_send_next(void);
+
+unsigned char i2c_tx(unsigned char address, unsigned char *data, unsigned char count);
 
 unsigned char i2c_recieve(void);
 

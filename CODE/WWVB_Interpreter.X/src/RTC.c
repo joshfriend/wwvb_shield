@@ -31,66 +31,66 @@ unsigned char bcd_to_decimal(unsigned char bcd) {
     return ((bcd/16 * 10) + (bcd % 16));
 }
 
-void start_rtc() {
+void start_rtc(void) {
     //Start transmission
     i2c_start();
     
     //Begin transmission in write mode
-    i2c_transmit(RTC_WRITE_ADDR);
+    i2c_tx_byte(RTC_WRITE_ADDR);
     //Send register location for data
-    i2c_transmit(0x00);
+    i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_transmit(decimal_to_bcd(seconds) & 0x80);
+    i2c_tx_byte(decimal_to_bcd(seconds) & 0x80);
     
     //Stop transmission
     i2c_halt();
 }
 
-void stop_rtc() {
+void stop_rtc(void) {
     //Start transmission
     i2c_start();
     
     //Begin transmission in write mode
-    i2c_transmit(RTC_WRITE_ADDR);
+    i2c_tx_byte(RTC_WRITE_ADDR);
     //Send register location for data
-    i2c_transmit(0x00);
+    i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_transmit(decimal_to_bcd(seconds) | 0x7F);
+    i2c_tx_byte(decimal_to_bcd(seconds) | 0x7F);
     
     //Stop transmission
     i2c_halt();
 }
 
-void set_rtc_time() {
+void set_rtc_time(void) {
     //Start transmission
     i2c_start();
     
     //Begin transmission in write mode
-    i2c_transmit(RTC_WRITE_ADDR);
+    i2c_tx_byte(RTC_WRITE_ADDR);
     //Send register location for data
-    i2c_transmit(0x00);
+    i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_transmit(decimal_to_bcd(seconds));
-    i2c_transmit(decimal_to_bcd(minutes));
-    i2c_transmit(decimal_to_bcd(hours));
-    i2c_transmit(decimal_to_bcd(weekday));
-    i2c_transmit(decimal_to_bcd(day));
-    i2c_transmit(decimal_to_bcd(month));
-    i2c_transmit(decimal_to_bcd(year));
+    i2c_tx_byte(decimal_to_bcd(seconds));
+    i2c_tx_byte(decimal_to_bcd(minutes));
+    i2c_tx_byte(decimal_to_bcd(hours));
+    i2c_tx_byte(decimal_to_bcd(weekday));
+    i2c_tx_byte(decimal_to_bcd(day));
+    i2c_tx_byte(decimal_to_bcd(month));
+    i2c_tx_byte(decimal_to_bcd(year));
     
     //Stop transmission
     i2c_halt();
 }
 
-void get_rtc_time() {
+void get_rtc_time(void) {
     //Start transmission
     i2c_start();
     
     //Start with dummy write
-    i2c_transmit(RTC_WRITE_ADDR);
+    i2c_tx_byte(RTC_WRITE_ADDR);
     
     //Send register location for data
     i2c_send(0x00);
@@ -99,7 +99,7 @@ void get_rtc_time() {
     i2c_repstart();
     
     //Send read address
-    i2c_transmit(RTC_READ_ADDR);
+    i2c_tx_byte(RTC_READ_ADDR);
     
     //Recieve data and acknowlege each byte recieved
     seconds = bcd_to_decimal(i2c_recieve());
@@ -122,18 +122,18 @@ void get_rtc_time() {
     i2c_halt();
 }
 
-void rtc_output_en(unsigned char en) {
+void rtc_output_ctrl(unsigned char data) {
     //Start transmission
     i2c_start();
     
     //Begin transmission in write mode
-    i2c_transmit(RTC_WRITE_ADDR);
+    i2c_tx_byte(RTC_WRITE_ADDR);
 
     //Send address of output control register
-    i2c_transmit(0x07);
+    i2c_tx_byte(0x07);
 
     //Set output enable bit to value of en
-    i2c_transmit(en << 7);
+    i2c_tx_byte(data);
 
     //Stop transmission
     i2c_halt();

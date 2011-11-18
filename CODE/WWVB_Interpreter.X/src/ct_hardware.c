@@ -18,23 +18,24 @@
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
+#include "ct_hardware.h"
 
- void io_setup(void) {
-	//Turn ADC Functionality OFF
-	ANSELA = ANSELC = 0;
-	
-	//Set all pins as outputs
-	TRISA = TRISC = 0;
-	
-	//Make T1G an input
-	TRISA |= 0x10;
+void io_setup(void) {
+    //Turn ADC Functionality OFF
+    ANSELA = ANSELC = 0;
 
-        //Set I2C pins as inputs
-        TRISC |= 0x03;
+    //Set all pins as outputs
+    TRISA = TRISC = 0;
 
-        //Enable weak pull-ups
-        nWPUEN = 0;
+    //Make T1G an input
+    TRISA |= 0x10;
 
-	//Enable weak pull-up on RA4
-	WPUA |= 0x10;
- }
+    //Set I2C pins as inputs
+    TRISC |= 0x03;
+
+    //Enable weak pull-ups
+    nWPUEN = 0;
+
+    //Enable weak pull-up on RA4
+    WPUA |= 0x10;
+}

@@ -16,5 +16,10 @@
  * Instructor: Dr. Andrew Sterian
  * Date: Nov 2, 2011
  -----------------------------------------------------------------------------*/
- 
- void io_setup(void);
+
+#ifndef CT_HARDWARE_h
+#define CT_HARDWARE_h
+
+void io_setup(void);
+
+#endif
