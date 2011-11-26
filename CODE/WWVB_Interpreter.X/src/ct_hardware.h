@@ -14,12 +14,13 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 2, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #ifndef CT_HARDWARE_h
 #define CT_HARDWARE_h
 
 void io_setup(void);
+void pcint_setup(void);
 
 #endif

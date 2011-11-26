@@ -14,20 +14,21 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 7, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
 #include "I2C.h"
 #include "RTC.h"
+#include "types.h"
 
-unsigned char seconds, minutes, hours, weekday, day, month, year;
+uint8_t seconds, minutes, hours, weekday, day, month, year;
 
-unsigned char decimal_to_bcd(unsigned char dec) {
+uint8_t decimal_to_bcd(uint8_t dec) {
     return (dec/10 * 16) + (dec % 10);
 }
 
-unsigned char bcd_to_decimal(unsigned char bcd) {
+uint8_t bcd_to_decimal(uint8_t bcd) {
     return ((bcd/16 * 10) + (bcd % 16));
 }
 
@@ -122,7 +123,7 @@ void get_rtc_time(void) {
     i2c_halt();
 }
 
-void rtc_output_ctrl(unsigned char data) {
+void rtc_output_ctrl(uint8_t data) {
     //Start transmission
     i2c_start();
     

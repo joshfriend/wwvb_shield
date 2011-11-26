@@ -14,17 +14,18 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 6, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
+#include "types.h"
 #include <stdlib.h>
 
-#define MAX_tx_buffer_size 30
+#define MAX_TX_BUFFER_SIZE 30
 
-static unsigned char i2c_tx_buf[MAX_tx_buffer_size] = {0};
-static unsigned char i2c_rx_buf[MAX_tx_buffer_size] = {0};
-static unsigned char tx_buffer_size = 0, rx_buffer_size = 0, buffer_pos = 0;
+static uint8_t i2c_tx_buf[MAX_TX_BUFFER_SIZE] = {0};
+static uint8_t i2c_rx_buf[MAX_TX_BUFFER_SIZE] = {0};
+static uint8_t tx_buffer_size = 0, rx_buffer_size = 0, buffer_pos = 0;
 
 void i2c_setup(void) {
     //Disable slew rate control
@@ -35,9 +36,6 @@ void i2c_setup(void) {
     
     //For a 100kHz CLock at FOSC = 1MHz, SCL pin clock period = ((ADD<7:0> + 1) *4)/FOSC
     SSP1ADD = 0x01;
-
-    //Enable MSSP interrupts
-    SSP1IE = 1;
 
     //Enable Global interrupts
     GIE = 1;
@@ -97,7 +95,7 @@ void i2c_wait(void) {
     while (( SSPCON2 & 0x1F) || (SSPSTAT & 0x04));
 }
 
-void i2c_tx_byte(unsigned char data) {
+void i2c_tx_byte(uint8_t data) {
     //Dump data to be sent into buffer
     SSP1BUF = data;
     
@@ -107,7 +105,7 @@ void i2c_tx_byte(unsigned char data) {
     i2c_wait();
 }
 
-unsigned char i2c_send_next(void) {
+uint8_t i2c_send_next(void) {
 
     //Check if slave acknowledged previous transmission
     if(!ACKSTAT) {
@@ -119,20 +117,29 @@ unsigned char i2c_send_next(void) {
         else {
             //Buffer has been sent, send stop condition
             i2c_halt();
+
+            //Disable MSSP interrupts
+            SSP1IE = 0;
         }
     }
     else {
         //Slave did not acknowledge, send stop condition
         i2c_halt();
+
+        //Disable MSSP interrupts
+        SSP1IE = 0;
     }
 
     //Return 1 if slave acknowledged, 0 if no-ack
     return !ACKSTAT;
 }
 
-unsigned char i2c_tx(unsigned char address, unsigned char *data, unsigned char count) {
+uint8_t i2c_tx(uint8_t address, uint8_t *data, uint8_t count) {
     //Initialize bus
     i2c_start();
+
+    //Enable MSSP interrupts
+    SSP1IE = 1;
  
     buffer_pos = 0;
 
@@ -148,8 +155,8 @@ unsigned char i2c_tx(unsigned char address, unsigned char *data, unsigned char c
     SSP1BUF = i2c_tx_buf[buffer_pos++];
 }
 
-unsigned char i2c_recieve(void) {
-    unsigned char data;
+uint8_t i2c_recieve(void) {
+    uint8_t data;
 
     //Set recieve enable bit
     SSP1CON2bits.RCEN = 1;

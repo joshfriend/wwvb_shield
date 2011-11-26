@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 2, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
@@ -38,4 +38,15 @@ void io_setup(void) {
 
     //Enable weak pull-up on RA4
     WPUA |= 0x10;
+}
+
+void pcint_setup(void) {
+    //Enable negative edge pin change interrupt on RA4
+    IOCAN4 = 1;
+
+    //Enable Global interrupts
+    GIE = 1;
+
+    //Enable peripheral interrupts
+    PEIE = 1;
 }

@@ -14,7 +14,7 @@
  * Authors: Eric Borne and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 2, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #ifndef TIMER_HARDWARE_h

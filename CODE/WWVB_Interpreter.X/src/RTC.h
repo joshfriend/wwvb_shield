@@ -14,11 +14,13 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 7, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #ifndef RTC_h
 #define RTC_h
+
+#include "types.h"
 
 //RTC Control address definitions
 #ifdef RTC_DS1307
@@ -29,15 +31,19 @@
 #define RTC_WRITE_ADDR 0xDE
 #define RTC_READ_ADDR 0xDF
 #endif
+#ifdef RTC_MCP79410N
+#define RTC_WRITE_ADDR 0xDE
+#define RTC_READ_ADDR 0xDF
+#endif
 #ifdef PCF8574
 #define RTC_WRITE_ADDR 0x40
 #define RTC_READ_ADDR 0x41
 #endif
 
 //Function Prototypes
-unsigned char decimal_to_bcd(unsigned char dec);
+uint8_t decimal_to_bcd(uint8_t dec);
 
-unsigned char bcd_to_decimal(unsigned char bcd);
+uint8_t bcd_to_decimal(uint8_t bcd);
 
 void start_rtc(void);
 
@@ -47,6 +53,6 @@ void set_rtc_time(void);
 
 void get_rtc_time(void);
 
-void rtc_output_ctrl(unsigned char data);
+void rtc_output_ctrl(uint8_t data);
 
 #endif

@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 2, 2011
+ * Date: Nov 25, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
@@ -26,23 +26,20 @@
 //CPU Frequency
 #define FOSC 1000000UL
 
-volatile unsigned tick = 0;
-volatile unsigned pulse_length_ms = 0;
-volatile unsigned char state = 0;
-
 void timer1_init(void) {
     //Timer ON, 1/8 Prescaler, Source = FOSC/4, 2 second range
-    //T1CON = T1CKPS1 + T1CKPS0 + TMR1ON;
-    T1CON = 0b000110001;
+    TMR1ON = 1;
+    T1CKPS1 = 1;
+    T1CKPS0 = 1;
 
-    //Enable gate on T1G pin, active high, toggle mode enabled.
-    //T1GCON = TMR1GE + T1GPOL + T1GTM;
-    T1GCON = 0b11100000;
+    //Enable gate on T1G pin, active LOW.
+    TMR1GE = 1;
+    T1GPOL = 0;
 
     //Enable Timer1 gate interrupt
     TMR1GIE = 1;
 
-    //Clear interrupt flag
+    //Clear gate interrupt flag
     TMR1GIF = 0;
 
     //Enable Global interrupts
@@ -54,8 +51,7 @@ void timer1_init(void) {
 
 void timer2_init(void) {
     //Timer2 ON, 1/1 prescaler = 4us per tick
-    //T2CON = TMR2ON;
-    T2CON = 0b00000100;
+    TMR2ON = 1;
 
     //Timer2 compare match set to create 1ms interrupt tick
     PR2 = ((FOSC / 4) / 1) / 1000 - 1;
