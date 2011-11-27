@@ -24,7 +24,7 @@
 #define MAX_TX_BUFFER_SIZE 30
 
 static uint8_t i2c_tx_buf[MAX_TX_BUFFER_SIZE] = {0};
-static uint8_t i2c_rx_buf[MAX_TX_BUFFER_SIZE] = {0};
+//static uint8_t i2c_rx_buf[MAX_TX_BUFFER_SIZE] = {0};
 static uint8_t tx_buffer_size = 0, rx_buffer_size = 0, buffer_pos = 0;
 
 void i2c_setup(void) {

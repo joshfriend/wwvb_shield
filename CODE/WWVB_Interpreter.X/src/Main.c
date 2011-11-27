@@ -24,6 +24,7 @@
 #include "I2C.h"
 #include "RTC.h"
 #include "types.h"
+#include "calendar.h"
 
 //Set config bits
 __CONFIG(FOSC_INTOSC & WDTE_OFF & PWRTE_OFF & MCLRE_OFF &
@@ -62,30 +63,38 @@ void main(void) {
     i2c_setup();
     
     while(1) {
-        if(bit_recieved_flag) {
+        if(bit_recieved_flag == 1) {
             //Convert timer count to milliseconds
             pulse_length >>= 5;
-            process_bit(pulse_length);
+
+            uint8_t wwvb_bit = process_bit(pulse_length);
+
+            i2c_start();
+            i2c_tx_byte(8);
+            i2c_tx_byte(wwvb_bit);
+            i2c_halt();
 
             //Clear flag
             bit_recieved_flag = 0;
         }
-        if(frame_recieved_flag) {
+        if(frame_recieved_flag == 1) {
             //Get time data
             time_t time;
             process_frame(&time);
-
-            //Store position of register first
-            i2c_buffer[0] = 0x00;
-
-            //Copy structure data into I2C buffer
-            uint8_t * time_ptr = &time;
-            for(uint8_t i = 1; i <= 7; i++) {
-                i2c_buffer[i] = time_ptr++;
+            
+            if(1) {
+                //Store position of register first
+                i2c_buffer[0] = 0x00;
+    
+                //Copy structure data into I2C buffer
+                uint8_t * time_ptr = &time;
+                for(uint8_t i = 1; i <= 7; i++) {
+                    i2c_buffer[i] = time_ptr++;
+                }
+                
+                //Push time update to RTC
+                i2c_tx(8, i2c_buffer, 7);
             }
-
-            //Push time update to RTC
-            i2c_tx(RTC_WRITE_ADDR, i2c_buffer, 7);
 
             //Clear flag
             frame_recieved_flag = 0;
@@ -142,6 +151,8 @@ void interrupt isr (void) {
                 edge_count = 1;
             }
         }
+        
+        IOCAF4 = 0;
     }
 
     //Timer2 compare match event

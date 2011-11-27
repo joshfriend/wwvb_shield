@@ -36,12 +36,6 @@ void timer1_init(void) {
     TMR1GE = 1;
     T1GPOL = 0;
 
-    //Enable Timer1 gate interrupt
-    TMR1GIE = 1;
-
-    //Clear gate interrupt flag
-    TMR1GIF = 0;
-
     //Enable Global interrupts
     GIE = 1;
 

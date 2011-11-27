@@ -83,3 +83,19 @@ uint8_t days_in_month(uint8_t month, uint8_t leap){
     else
         return 31;
 }
+
+uint8_t validate(time_t time) {
+    
+    if(time.minutes > 59 || time.minutes < 0)
+        return 0;
+    if(time.hours > 23 || time.hours < 0)
+        return 0;
+    if(time.day_of_year > (365 + time.leap) || time.day_of_year < 0)
+        return 0;
+    if(time.year > 99 || time.year < 0)
+        return 0;
+    if(time.month > 12 || time.month < 1)
+        return 0;
+    
+    return 1;
+}

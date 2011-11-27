@@ -42,7 +42,7 @@
 extern uint8_t frame_recieved_flag;
 
 //Function prototypes
-void process_bit(uint16_t pulse_length);
+uint8_t process_bit(uint16_t pulse_length);
 uint8_t get_bit_value(uint16_t pulse_length);
 void process_frame(time_t *frame);
 
