@@ -31,18 +31,28 @@ uint8_t frame_position = 0;
 static time_t wwvb;
 
 uint8_t process_bit(uint16_t pulse_length) {
+    static uint8_t prev_bit_value = 0;
     uint8_t bit_value = get_bit_value(pulse_length);
 
+    //Roll-over frame position
     if(frame_position > 59) {
         frame_position = 0;
     }
 
+    /*
     i2c_start();
     i2c_tx_byte(8);
     i2c_tx_byte(frame_position+3);
     i2c_halt();
+    */
+
+    if(bit_value == FRAME && prev_bit_value == FRAME) {
+        //Bitstream minute mark detected, set frame position to 1
+        frame_position = 0;
+    }
 
     switch(frame_position) {
+        //Frame markers...
         case 0:
         case 9:
         case 19:
@@ -56,15 +66,13 @@ uint8_t process_bit(uint16_t pulse_length) {
             }
             else if(frame_position == 59) {
                 frame_recieved_flag = 1;
-                i2c_start();
-                i2c_tx_byte(8);
-                i2c_tx_byte(0xFC);
-                i2c_halt();
             }
             break;
 
+        //Seconds bits...
         case 1:
             if(bit_value == FRAME)
+                //Double mark detected in bitstream, set position to 1
                 frame_position = 1;
             else
                 wwvb.minutes += 40 * bit_value;
@@ -88,6 +96,7 @@ uint8_t process_bit(uint16_t pulse_length) {
             wwvb.minutes += 1 * bit_value;
             break;
 
+        //Hours bits...
         case 12:
             wwvb.hours += 20 * bit_value;
             break;
@@ -107,6 +116,7 @@ uint8_t process_bit(uint16_t pulse_length) {
             wwvb.hours += 1 * bit_value;
             break;
 
+        //Day of year bits...
         case 22:
             wwvb.day_of_year += 200 * bit_value;
             break;
@@ -138,6 +148,7 @@ uint8_t process_bit(uint16_t pulse_length) {
             wwvb.day_of_year += 1 * bit_value;
             break;
 
+        //DUT correction bits...
         case 36:
         case 37:
         case 38:
@@ -146,9 +157,10 @@ uint8_t process_bit(uint16_t pulse_length) {
         case 42:
         case 43:
             //DUT1 Correction not implemented yet...
-            //max skew from actualy time +/- 0.7
+            //max skew from actual time +/- 0.7
             break;
 
+        //Year bits...
         case 45:
             wwvb.year += 80 * bit_value;
             break;
@@ -174,17 +186,19 @@ uint8_t process_bit(uint16_t pulse_length) {
             wwvb.year += 1 * bit_value;
             break;
 
+        //Leap year bit
         case 55:
             //Year is a leap year?
             wwvb.leap = bit_value;
             break;
 
+        //Leap second bit
         case 56:
             //Leap second warning
             wwvb.leap_second = bit_value;
             break;
 
-        //Daylight Savings indicator
+        //Daylight Savings indicator bits...
         // 0 = DST not in effect
         // 1 = DST ends today
         // 2 = DST begins today
@@ -203,6 +217,9 @@ uint8_t process_bit(uint16_t pulse_length) {
 
     frame_position++;
 
+    //Save previous bit value
+    prev_bit_value = bit_value;
+
     return bit_value;
 }
 
@@ -215,15 +232,15 @@ uint8_t get_bit_value(uint16_t pulse_length) {
     }
     else if(pulse_length < MAX_ZERO) {
         //Recieved frame marker pulse
-        bitVal = 0;
+        bitVal = ZERO;
     }
     else if(pulse_length < MAX_ONE) {
         //Recieved binary one pulse
-        bitVal = 1;
+        bitVal = ONE;
     }
     else if(pulse_length < MAX_FRAME){
         //Recieved binary zero pulse
-        bitVal = 2;
+        bitVal = FRAME;
     }
 
     return bitVal;
@@ -234,8 +251,10 @@ void process_frame(time_t *frame) {
     frame->seconds = 0x80;
     frame->minutes = decimal_to_bcd(wwvb.minutes);
     frame->hours = decimal_to_bcd(wwvb.hours);
-    frame->month = decimal_to_bcd(get_day_of_month(wwvb));
-    frame->day_of_year = decimal_to_bcd(wwvb.day_of_year);
+    frame->day_of_week = 0;//decimal_to_bcd(get_day_of_week(wwvb) | (1<<5));
+    frame->date = decimal_to_bcd(get_day_of_month(wwvb));
+    frame->month = decimal_to_bcd(get_month(wwvb));
+    frame->day_of_year = wwvb.day_of_year;
     frame->year = decimal_to_bcd(wwvb.year);
     frame->leap = decimal_to_bcd(wwvb.leap);
 

@@ -69,10 +69,12 @@ void main(void) {
 
             uint8_t wwvb_bit = process_bit(pulse_length);
 
+            /*
             i2c_start();
             i2c_tx_byte(8);
             i2c_tx_byte(wwvb_bit);
             i2c_halt();
+            */
 
             //Clear flag
             bit_recieved_flag = 0;
@@ -89,11 +91,11 @@ void main(void) {
                 //Copy structure data into I2C buffer
                 uint8_t * time_ptr = &time;
                 for(uint8_t i = 1; i <= 7; i++) {
-                    i2c_buffer[i] = time_ptr++;
+                    i2c_buffer[i] = *time_ptr++;
                 }
                 
                 //Push time update to RTC
-                i2c_tx(8, i2c_buffer, 7);
+                i2c_tx(8, i2c_buffer, 8);
             }
 
             //Clear flag
