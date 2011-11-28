@@ -22,13 +22,13 @@ int bitCount = 60;                    // 60 bits, one per second
 byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
   2, //  0 frame reference Pr -> *** MUST BE 2 ***
   0, //  1 minute 40                        
-  0, //  2 minute 20
-  1, //  3 minute 10
+  1, //  2 minute 20
+  0, //  3 minute 10
   0, //  4 blank
   0, //  5 minute 8
   0, //  6 minute 4
-  1, //  7 minute 2
-  0, //  8 minute 1
+  0, //  7 minute 2
+  1, //  8 minute 1
   2, //  9 mark P1 -> *** MUST BE 2 ***
   0, // 10 blank
   0, // 11 blank
@@ -38,7 +38,7 @@ byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
   0, // 15 hours 8
   1, // 16 hours 4
   0, // 17 hours 2
-  1, // 18 hours 1
+  0, // 18 hours 1
   2, // 19 mark P2 -> *** MUST BE 2 ***
   0, // 20 blank
   0, // 21 blank
@@ -100,7 +100,8 @@ void  loop(){
         while(digitalRead(22) == HIGH);
         i = 56;
     }
-        
+    Serial.print(i);
+    Serial.print(", ");
     if (clockData[i] == 2) { 
       genMark(); 
     } 
@@ -117,10 +118,14 @@ void  loop(){
 // this function is registered as an event, see setup()
 void receiveEvent(int howMany)
 {
+  Serial.println("Recieved from PIC:");
   while(Wire.available()) // loop through all but the last
   {
     unsigned char c = Wire.receive(); // receive byte as a character
+    Serial.print(c,HEX);
+    Serial.print(" ");
     
+    /*
     switch(c) {
         case 0:
             Serial.println("\t0");
@@ -142,28 +147,30 @@ void receiveEvent(int howMany)
             break;
         default:
             Serial.print(c-3);
+            Serial.print(" ");
     }
-   
+    */   
   }
+  Serial.println();
 }
 
 void genMark() {                      //generate 800ms Mark
   digitalWrite(clockOutPin, LOW);
-  delay(80);
+  delay(800);
   digitalWrite(clockOutPin, HIGH);
-  delay(20);
+  delay(200);
 }
 
 void genZero() {                      // generate 200ms Zero
   digitalWrite(clockOutPin, LOW);
-  delay(20);
+  delay(200);
   digitalWrite(clockOutPin, HIGH);
-  delay(80);
+  delay(800);
 }
 
 void genOne() {                       // generate 500ms One
   digitalWrite(clockOutPin, LOW);
-  delay(50);
+  delay(500);
   digitalWrite(clockOutPin, HIGH);
-  delay(50);
+  delay(500);
 }
