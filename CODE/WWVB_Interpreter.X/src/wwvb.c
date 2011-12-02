@@ -38,14 +38,12 @@ uint8_t process_bit(uint16_t pulse_length) {
     if(frame_position > 59) {
         frame_position = 0;
     }
-
-    /*
+    
     i2c_start();
     i2c_tx_byte(8);
-    i2c_tx_byte(frame_position+3);
+    i2c_tx_byte(bit_value);
     i2c_halt();
-    */
-
+    
     if(bit_value == FRAME && prev_bit_value == FRAME) {
         //Bitstream minute mark detected, set frame position to 1
         frame_position = 0;
@@ -247,13 +245,17 @@ uint8_t get_bit_value(uint16_t pulse_length) {
 }
 
 void process_frame(time_t *frame) {
+    //Process WWVB Date data
+    wwvb.month = get_month(wwvb);
+    wwvb.date = get_day_of_month(wwvb);
+
     //Copy data and convert to BCD for RTC
     frame->seconds = 0x80;
     frame->minutes = decimal_to_bcd(wwvb.minutes);
     frame->hours = decimal_to_bcd(wwvb.hours);
     frame->day_of_week = 0;//decimal_to_bcd(get_day_of_week(wwvb) | (1<<5));
-    frame->date = decimal_to_bcd(get_day_of_month(wwvb));
-    frame->month = decimal_to_bcd(get_month(wwvb));
+    frame->month = decimal_to_bcd(wwvb.month);
+    frame->date = decimal_to_bcd(wwvb.date);
     frame->day_of_year = wwvb.day_of_year;
     frame->year = decimal_to_bcd(wwvb.year);
     frame->leap = decimal_to_bcd(wwvb.leap);
@@ -266,4 +268,6 @@ void process_frame(time_t *frame) {
     wwvb.leap = 0;
     wwvb.leap_second = 0;
     wwvb.dst = 0;
+    wwvb.month = 0;
+    wwvb.date = 0;
 }

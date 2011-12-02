@@ -35,7 +35,7 @@ typedef struct {
     uint8_t year;
     
     //Used only by WWVB interpreter functions
-    uint8_t day_of_year;
+    uint16_t day_of_year;
     uint8_t leap;
     uint8_t leap_second;
     uint8_t dst;

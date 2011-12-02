@@ -61,20 +61,13 @@ void main(void) {
 
     //Initialize I2C hardware
     i2c_setup();
-    
+
     while(1) {
         if(bit_recieved_flag == 1) {
             //Convert timer count to milliseconds
             pulse_length >>= 5;
 
             uint8_t wwvb_bit = process_bit(pulse_length);
-
-            /*
-            i2c_start();
-            i2c_tx_byte(8);
-            i2c_tx_byte(wwvb_bit);
-            i2c_halt();
-            */
 
             //Clear flag
             bit_recieved_flag = 0;

@@ -21,27 +21,27 @@
 #include "types.h"
 
 uint8_t get_month(time_t time) {
-    if(time.day_of_year < 31)
+    if(time.day_of_year <= 31)
         return 1;
-    else if(time.day_of_year < (59+time.leap))
+    else if(time.day_of_year <= (59+time.leap))
         return 2;
-    else if(time.day_of_year < (90+time.leap))
+    else if(time.day_of_year <= (90+time.leap))
         return 3;
-    else if(time.day_of_year < (120+time.leap))
+    else if(time.day_of_year <= (120+time.leap))
         return 4;
-    else if(time.day_of_year < (151+time.leap))
+    else if(time.day_of_year <= (151+time.leap))
         return 5;
-    else if(time.day_of_year < (181+time.leap))
+    else if(time.day_of_year <= (181+time.leap))
         return 6;
-    else if(time.day_of_year < (212+time.leap))
+    else if(time.day_of_year <= (212+time.leap))
         return 7;
-    else if(time.day_of_year < (243+time.leap))
+    else if(time.day_of_year <= (243+time.leap))
         return 8;
-    else if(time.day_of_year < (273+time.leap))
+    else if(time.day_of_year <= (273+time.leap))
         return 9;
-    else if(time.day_of_year < (304+time.leap))
+    else if(time.day_of_year <= (304+time.leap))
         return 10;
-    else if(time.day_of_year < (334+time.leap))
+    else if(time.day_of_year <= (334+time.leap))
         return 11;
     else
         return 12;
@@ -64,7 +64,7 @@ uint8_t get_day_of_week(time_t time) {
 
 uint8_t get_day_of_month(time_t time) {
     uint8_t m = get_month(time);
-    uint8_t d = time.day_of_year;
+    uint16_t d = time.day_of_year;
 
     for(uint8_t i=1;i<m;i++){
         if(d > days_in_month(i, time.leap)){
@@ -90,7 +90,7 @@ uint8_t validate(time_t time) {
         return 0;
     if(time.hours > 23 || time.hours < 0)
         return 0;
-    if(time.day_of_year > (365 + time.leap) || time.day_of_year < 0)
+    if(time.day_of_year > (365 + time.leap))
         return 0;
     if(time.year > 99 || time.year < 0)
         return 0;
