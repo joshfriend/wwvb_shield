@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #ifndef I2C_h
@@ -24,25 +24,15 @@
 
 //Function Prototypes
 void i2c_setup(void);
-
 void i2c_start(void);
-
 void i2c_repstart(void);
-
 void i2c_halt(void);
-
 void i2c_ack(void);
-
 void i2c_noack(void);
-
 void i2c_wait(void);
-
 void i2c_tx_byte(uint8_t data);
-
 uint8_t i2c_send_next(void);
-
 uint8_t i2c_tx(uint8_t address, uint8_t *data, uint8_t count);
-
 uint8_t i2c_recieve(void);
 
 #endif

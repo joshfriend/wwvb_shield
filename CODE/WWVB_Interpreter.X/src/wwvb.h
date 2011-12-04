@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #ifndef WWVB_h
@@ -34,6 +34,7 @@
 #define MAX_ZERO 300
 
 //Definitions of values returned by bit_value()
+#define ERROR 3
 #define FRAME 2
 #define ONE 1
 #define ZERO 0
@@ -41,9 +42,18 @@
 //Global flag to mark when valid WWVB frame has been recieved
 extern uint8_t frame_recieved_flag;
 
+//Lookup table of dont care bits
+static const uint8_t dont_care_bit[60] = {0,0,0,0,1,0,0,0,0,0,
+                                          1,1,0,0,1,0,0,0,0,0,
+                                          1,1,0,0,1,0,0,0,0,0,
+                                          0,0,0,0,1,1,0,0,0,0,
+                                          0,0,0,0,1,0,0,0,0,0,
+                                          0,0,0,0,1,0,0,0,0,0};
+
 //Function prototypes
 uint8_t process_bit(uint16_t pulse_length);
 uint8_t get_bit_value(uint16_t pulse_length);
 void process_frame(time_t *frame);
+void clear_data(time_t *frame);
 
 #endif

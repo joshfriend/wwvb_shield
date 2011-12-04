@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
@@ -41,10 +41,8 @@ volatile uint16_t timer1_val = 0;
 volatile uint8_t edge_count = 0;
 volatile uint8_t bit_recieved_flag = 0;
 
-//char data[10] = {0x00,0x80,0x01,0x02,0x04,0x17,0x11,0x88};
-
 //Buffer for I2C data
-char i2c_buffer[10] = {0};
+uint8_t i2c_buffer[10] = {0};
 
 void main(void) {
     //Setup main clock
@@ -64,7 +62,7 @@ void main(void) {
 
     while(1) {
         if(bit_recieved_flag == 1) {
-            //Convert timer count to milliseconds
+            //Convert timer count to milliseconds (divide by 32)
             pulse_length >>= 5;
 
             uint8_t wwvb_bit = process_bit(pulse_length);
@@ -77,7 +75,11 @@ void main(void) {
             time_t time;
             process_frame(&time);
             
-            if(1) {
+            if(validate(time)) {
+                
+                //Format to BCD for RTC
+                time_to_bcd(&time);
+                
                 //Store position of register first
                 i2c_buffer[0] = 0x00;
     
@@ -147,12 +149,13 @@ void interrupt isr (void) {
             }
         }
         
+        //Clear interrupt flag
         IOCAF4 = 0;
     }
 
     //Timer2 compare match event
     if(TMR2IE && TMR2IF) {
-        //Used to keep track of frame postition
+        //Clear interrupt flag
         TMR2IF = 0;
 
         //Increment tick

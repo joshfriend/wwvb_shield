@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #include "calendar.h"
@@ -53,9 +53,8 @@ uint8_t get_day_of_week(time_t time) {
     uint8_t m = get_month(time);
     uint8_t y = time.year;
 
-    /*This is an alternate method which I used in my 350 project.
-    http://en.wikipedia.org/wiki/Weekday_determination#Sakamoto.27s_Method
-    */
+    // http://en.wikipedia.org/wiki/Weekday_determination#Sakamoto.27s_Method
+    
     static uint8_t t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     y -= m < 3;
     return (uint8_t)((y + y/4 - y/100 + y/400 + t[m-1] + d) % 7);
@@ -86,13 +85,13 @@ uint8_t days_in_month(uint8_t month, uint8_t leap){
 
 uint8_t validate(time_t time) {
     
-    if(time.minutes > 59 || time.minutes < 0)
+    if(time.minutes > 59)
         return 0;
-    if(time.hours > 23 || time.hours < 0)
+    if(time.hours > 23)
         return 0;
     if(time.day_of_year > (365 + time.leap))
         return 0;
-    if(time.year > 99 || time.year < 0)
+    if(time.year > 99)
         return 0;
     if(time.month > 12 || time.month < 1)
         return 0;

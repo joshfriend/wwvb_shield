@@ -14,14 +14,11 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
 #include "timer_hardware.h"
-#include "wwvb.h"
-#include "RTC.h"
-#include "I2C.h"
 
 //CPU Frequency
 #define FOSC 1000000UL

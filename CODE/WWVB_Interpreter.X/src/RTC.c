@@ -14,7 +14,7 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
@@ -22,14 +22,24 @@
 #include "RTC.h"
 #include "types.h"
 
-uint8_t seconds, minutes, hours, weekday, day, month, year;
-
 uint8_t decimal_to_bcd(uint8_t dec) {
     return (dec/10 * 16) + (dec % 10);
 }
 
 uint8_t bcd_to_decimal(uint8_t bcd) {
     return ((bcd/16 * 10) + (bcd % 16));
+}
+
+void time_to_bcd(time_t *time) {
+    //Convert to BCD for RTC
+    time->seconds = 0x80;
+    time->minutes = decimal_to_bcd(time->minutes);
+    time->hours = decimal_to_bcd(time->hours);
+    time->day_of_week |= (1<<5);
+    time->month = decimal_to_bcd(time->month);
+    time->date = decimal_to_bcd(time->date);
+    time->year = decimal_to_bcd(time->year);
+    time->leap = decimal_to_bcd(time->leap);
 }
 
 void start_rtc(void) {
@@ -42,7 +52,7 @@ void start_rtc(void) {
     i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_tx_byte(decimal_to_bcd(seconds) & 0x80);
+    i2c_tx_byte(0x80);
     
     //Stop transmission
     i2c_halt();
@@ -58,13 +68,13 @@ void stop_rtc(void) {
     i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_tx_byte(decimal_to_bcd(seconds) | 0x7F);
+    i2c_tx_byte(0x00);
     
     //Stop transmission
     i2c_halt();
 }
 
-void set_rtc_time(void) {
+void set_rtc_time(time_t time) {
     //Start transmission
     i2c_start();
     
@@ -74,19 +84,20 @@ void set_rtc_time(void) {
     i2c_tx_byte(0x00);
     
     //Send data to RTC
-    i2c_tx_byte(decimal_to_bcd(seconds));
-    i2c_tx_byte(decimal_to_bcd(minutes));
-    i2c_tx_byte(decimal_to_bcd(hours));
-    i2c_tx_byte(decimal_to_bcd(weekday));
-    i2c_tx_byte(decimal_to_bcd(day));
-    i2c_tx_byte(decimal_to_bcd(month));
-    i2c_tx_byte(decimal_to_bcd(year));
+    i2c_tx_byte(decimal_to_bcd(time.seconds));
+    i2c_tx_byte(decimal_to_bcd(time.minutes));
+    i2c_tx_byte(decimal_to_bcd(time.hours));
+    i2c_tx_byte(decimal_to_bcd(time.day_of_week));
+    i2c_tx_byte(decimal_to_bcd(time.date));
+    i2c_tx_byte(decimal_to_bcd(time.month));
+    i2c_tx_byte(decimal_to_bcd(time.year));
     
     //Stop transmission
     i2c_halt();
 }
 
-void get_rtc_time(void) {
+time_t get_rtc_time(void) {
+    time_t rtc_time;
     //Start transmission
     i2c_start();
     
@@ -103,24 +114,26 @@ void get_rtc_time(void) {
     i2c_tx_byte(RTC_READ_ADDR);
     
     //Recieve data and acknowlege each byte recieved
-    seconds = bcd_to_decimal(i2c_recieve());
+    rtc_time.seconds = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    minutes = bcd_to_decimal(i2c_recieve());
+    rtc_time.minutes = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    hours = bcd_to_decimal(i2c_recieve());
+    rtc_time.hours = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    weekday = bcd_to_decimal(i2c_recieve());
+    rtc_time.day_of_week = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    day = bcd_to_decimal(i2c_recieve());
+    rtc_time.date = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    month = bcd_to_decimal(i2c_recieve());
+    rtc_time.month = bcd_to_decimal(i2c_recieve());
     i2c_ack();
-    year = bcd_to_decimal(i2c_recieve());
+    rtc_time.year = bcd_to_decimal(i2c_recieve());
     //End repeated start by non-ack
     i2c_noack();
     
     //Stop transmission
     i2c_halt();
+    
+    return rtc_time;
 }
 
 void rtc_output_ctrl(uint8_t data) {

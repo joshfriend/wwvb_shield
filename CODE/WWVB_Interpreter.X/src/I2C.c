@@ -14,12 +14,11 @@
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
- * Date: Nov 25, 2011
+ * Date: Dec 8, 2011
  -----------------------------------------------------------------------------*/
 
 #include "htc.h"
 #include "types.h"
-#include <stdlib.h>
 
 #define MAX_TX_BUFFER_SIZE 30
 
