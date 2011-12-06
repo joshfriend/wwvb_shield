@@ -38,12 +38,13 @@ uint8_t process_bit(uint16_t pulse_length) {
     if(frame_position > 59) {
         frame_position = 0;
     }
-    
+
     i2c_start();
     i2c_tx_byte(8);
     i2c_tx_byte(bit_value);
     i2c_halt();
-    
+
+    //Check if error can be ignored
     if(bit_value == ERROR && !dont_care_bit[frame_position]) {
         clear_data(&wwvb);
         frame_position = 0;
@@ -52,6 +53,10 @@ uint8_t process_bit(uint16_t pulse_length) {
         if(bit_value == FRAME && prev_bit_value == FRAME) {
             //Bitstream minute mark detected, set frame position to 1
             frame_position = 0;
+            i2c_start();
+            i2c_tx_byte(8);
+            i2c_tx_byte(0xFC);
+            i2c_halt();
         }
     
         switch(frame_position) {
@@ -66,6 +71,11 @@ uint8_t process_bit(uint16_t pulse_length) {
                 if(bit_value != FRAME) {
                     //Syncs frame position counter
                     frame_position = 0;
+                    clear_data(&wwvb);
+                    i2c_start();
+                    i2c_tx_byte(8);
+                    i2c_tx_byte(0xFF);
+                    i2c_halt();
                 }
                 else if(frame_position == 59) {
                     frame_recieved_flag = 1;

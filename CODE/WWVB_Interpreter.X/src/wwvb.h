@@ -23,7 +23,7 @@
 #include "types.h"
 
 //WWVB decoding algorithm parameters
-#define MAX_EDGES 4             //Must be at least 1
+#define MAX_EDGES 5             //Must be at least 1
 #define MIN_BIT_WIDTH_MS 975    //Minimum bit width
 #define BIT_TIMEOUT_MS 1100     //Bit width decode timout value
 
@@ -43,12 +43,13 @@
 extern uint8_t frame_recieved_flag;
 
 //Lookup table of dont care bits
-static const uint8_t dont_care_bit[60] = {0,0,0,0,1,0,0,0,0,0,
-                                          1,1,0,0,1,0,0,0,0,0,
-                                          1,1,0,0,1,0,0,0,0,0,
-                                          0,0,0,0,1,1,0,0,0,0,
-                                          0,0,0,0,1,0,0,0,0,0,
-                                          0,0,0,0,1,0,0,0,0,0};
+//DUT and leapsecond not used
+static const uint8_t dont_care_bit[60] = {0,0,0,0,1,0,0,0,0,0,  //9
+                                          1,1,0,0,1,0,0,0,0,0,  //19
+                                          1,1,0,0,1,0,0,0,0,0,  //29
+                                          0,0,0,0,1,1,0,1,1,1,  //39
+                                          1,1,1,1,1,0,0,0,0,0,  //49
+                                          0,0,0,0,1,0,1,0,0,0}; //59
 
 //Function prototypes
 uint8_t process_bit(uint16_t pulse_length);
