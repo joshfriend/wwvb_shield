@@ -10,7 +10,7 @@
  *            \ \_\  \ \_____\  \ \_\ \ \_\  \ \_\  \ \_____\
  *             \/_/   \/_____/   \/_/  \/_/   \/_/   \/_____/
  *
- * WWVB Interpreter Main Source
+ * --- WWVB Interpreter Main Source ---
  * Authors: Eric Born and Josh Friend
  * Course: EGR326-901
  * Instructor: Dr. Andrew Sterian
@@ -71,6 +71,11 @@ void main(void) {
             bit_recieved_flag = 0;
         }
         if(frame_recieved_flag == 1) {
+            i2c_start();
+            i2c_tx_byte(8);
+            i2c_tx_byte(0xFE);
+            i2c_halt();
+
             //Get time data
             time_t time;
             process_frame(&time);

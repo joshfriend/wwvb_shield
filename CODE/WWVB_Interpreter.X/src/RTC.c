@@ -35,7 +35,7 @@ void time_to_bcd(time_t *time) {
     time->seconds = 0x80;
     time->minutes = decimal_to_bcd(time->minutes);
     time->hours = decimal_to_bcd(time->hours);
-    time->day_of_week |= (1<<5);
+    time->day_of_week |= (1<<3);
     time->month = decimal_to_bcd(time->month);
     time->date = decimal_to_bcd(time->date);
     time->year = decimal_to_bcd(time->year);
