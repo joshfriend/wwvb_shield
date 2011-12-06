@@ -37,8 +37,10 @@ uint8_t process_bit(uint16_t pulse_length) {
     //Roll-over frame position
     if(frame_position > 59) {
         frame_position = 0;
+        clear_data(&wwvb);
     }
 
+    //Send debug data
     i2c_start();
     i2c_tx_byte(8);
     i2c_tx_byte(bit_value);
@@ -53,6 +55,9 @@ uint8_t process_bit(uint16_t pulse_length) {
         if(bit_value == FRAME && prev_bit_value == FRAME) {
             //Bitstream minute mark detected, set frame position to 1
             frame_position = 0;
+            clear_data(&wwvb);
+
+            //Send debug data
             i2c_start();
             i2c_tx_byte(8);
             i2c_tx_byte(0xFC);
@@ -72,6 +77,8 @@ uint8_t process_bit(uint16_t pulse_length) {
                     //Syncs frame position counter
                     frame_position = 0;
                     clear_data(&wwvb);
+
+                    //Send debug data
                     i2c_start();
                     i2c_tx_byte(8);
                     i2c_tx_byte(0xFF);
