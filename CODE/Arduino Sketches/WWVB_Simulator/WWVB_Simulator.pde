@@ -18,7 +18,7 @@ int bitCount = 60;                    // 60 bits, one per second
 // Clock output data, fiddle the zeros and ones to your heart's content,
 // but the twos must remain! All bits noted as blank are ALWAYS ZERO.
 
-// November 30 at 4:21AM
+// December 2 at 4:21AM
 byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
   2, //  0 frame reference Pr -> *** MUST BE 2 ***
   0, //  1 minute 40                        
@@ -52,7 +52,7 @@ byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
   2, // 29 mark P3 -> *** MUST BE 2 ***
   0, // 30 day of year 8
   1, // 31 day of year 4
-  0, // 32 day of year 2
+  1, // 32 day of year 2
   0, // 33 day of year 1
   0, // 34 blank
   0, // 35 blank
@@ -85,7 +85,7 @@ byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("RESET");
+  Serial.println("\nRESET");
   Wire.begin(4);                // join i2c bus with address #4
   Wire.onReceive(receiveEvent); // register event
   pinMode(clockOutPin, OUTPUT);      // set pin digital output
@@ -94,14 +94,12 @@ void setup() {
 
 
 void  loop(){
-  Serial.println("\nSTART OF FRAME");
   for(int i = 0; i < bitCount; i++) {
     if(digitalRead(22) == HIGH){
         while(digitalRead(22) == HIGH);
         i = 56;
     }
-    Serial.print(i);
-    Serial.print(", ");
+    
     if (clockData[i] == 2) { 
       genMark(); 
     } 
@@ -111,6 +109,10 @@ void  loop(){
     else { 
       genZero(); 
     }
+    Serial.println();
+    Serial.print(i);
+    Serial.print("   ");
+    Serial.print(clockData[i],DEC);
   }
 }
 
@@ -118,40 +120,28 @@ void  loop(){
 // this function is registered as an event, see setup()
 void receiveEvent(int howMany)
 {
-  Serial.println("Recieved from PIC:");
+  //Serial.println("Recieved from PIC:");
   while(Wire.available()) // loop through all but the last
   {
     unsigned char c = Wire.receive(); // receive byte as a character
-    Serial.print(c,HEX);
-    Serial.print(" ");
-    
-    /*
-    switch(c) {
-        case 0:
-            Serial.println("\t0");
-            break;
-        case 1:
-            Serial.println("\t1");
-            break;
-        case 2:
-            Serial.println("\t-");
-            break;
-        case 0xFF:
-            Serial.println("\nMAIN LOOP VALID FRAME FLAG");
-            break;
-        case 0xFD:
-            Serial.println("\nMAIN LOOP FRAME RECIEVED FLAG");
-            break;
-        case 0xFC:
-            Serial.println("\nPOSITION 59");
-            break;
-        default:
-            Serial.print(c-3);
-            Serial.print(" ");
+    if(c == 0xFF) {
+            Serial.println();
     }
-    */   
+    else if(c == 0xFE) {
+        Serial.println("FRAME: ");
+    }
+    else if(c == 0xFC) {
+        Serial.print("DOUBLE SYNC MARKER");
+    }
+    else if(c == 0xFB) {
+        Serial.print("PASSED VALIDATION");
+    }
+    else {
+        Serial.print("   ");
+        Serial.print(c,HEX);
+        Serial.print("*  ");
+    }  
   }
-  Serial.println();
 }
 
 void genMark() {                      //generate 800ms Mark
