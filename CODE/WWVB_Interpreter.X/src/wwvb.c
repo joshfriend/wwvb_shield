@@ -31,16 +31,16 @@ uint8_t frame_position = 0;
 static time_t wwvb;
 
 uint8_t process_bit(uint16_t pulse_length) {
-    static uint8_t prev_bit_value = 1;
+    static uint8_t prev_bit_value = 0;
     uint8_t bit_value = get_bit_value(pulse_length);
 
     //Roll-over frame position
     if(frame_position > 59) {
-        frame_position = 0;
         clear_data(&wwvb);
+        frame_position = 0;
     }
 
-    //Send debug data
+    //Send debug data (bit value)
     i2c_start();
     i2c_tx_byte(8);
     i2c_tx_byte(bit_value);
@@ -53,17 +53,17 @@ uint8_t process_bit(uint16_t pulse_length) {
     }
     else {
         if(bit_value == FRAME && prev_bit_value == FRAME) {
-            //Bitstream minute mark detected, set frame position to 1
-            frame_position = 0;
+            //Bitstream minute mark detected, set frame position to 0
             clear_data(&wwvb);
+            frame_position = 0;
 
-            //Send debug data
+            //Send debug data (frame mark detected)
             i2c_start();
             i2c_tx_byte(8);
             i2c_tx_byte(0xFC);
             i2c_halt();
         }
-    
+
         switch(frame_position) {
             //Frame markers...
             case 0:
@@ -75,10 +75,11 @@ uint8_t process_bit(uint16_t pulse_length) {
             case 59:
                 if(bit_value != FRAME) {
                     //Syncs frame position counter
-                    frame_position = 0;
+                    //Increment operation at end will set this to 0:
+                    frame_position = -1;
                     clear_data(&wwvb);
 
-                    //Send debug data
+                    //Send debug data (frame error)
                     i2c_start();
                     i2c_tx_byte(8);
                     i2c_tx_byte(0xFF);
@@ -86,16 +87,31 @@ uint8_t process_bit(uint16_t pulse_length) {
                 }
                 else if(frame_position == 59) {
                     frame_recieved_flag = 1;
+                    /*
+                    //Send debug data (frame mark detected)
+                    i2c_start();
+                    i2c_tx_byte(8);
+                    i2c_tx_byte(0xFC);
+                    i2c_tx_byte(decimal_to_bcd(wwvb.minutes));
+                    i2c_tx_byte(decimal_to_bcd(wwvb.hours));
+                    i2c_tx_byte(decimal_to_bcd(wwvb.day_of_year));
+                    i2c_tx_byte(decimal_to_bcd(wwvb.day_of_year >> 8));
+                    i2c_tx_byte(decimal_to_bcd(wwvb.year));
+                    i2c_halt();
+                    */
                 }
                 break;
     
             //Seconds bits...
             case 1:
-                if(bit_value == FRAME)
-                    //Double mark detected in bitstream, set position to 1
+                if(bit_value == FRAME) {
+                    //Double mark detected in bitstream, reset position to 1
                     frame_position = 1;
-                else
+                    clear_data(&wwvb);
+                }
+                else {
                     wwvb.minutes += 40 * bit_value;
+                }
                 break;
             case 2:
                 wwvb.minutes += 20 * bit_value;
@@ -245,26 +261,26 @@ uint8_t process_bit(uint16_t pulse_length) {
 }
 
 uint8_t get_bit_value(uint16_t pulse_length) {
-    uint8_t bitVal = 0;
+    uint8_t bit_value = 0;
 
-    if(pulse_length < MAX_ERROR) {
-        //Pulse not recognized
-        bitVal = 3;
+    //Use windowing approach
+    if((pulse_length > (BIT_LEN_ZERO_MS - MARGIN_MS))
+        && (pulse_length < (BIT_LEN_ZERO_MS + MARGIN_MS))) {
+        bit_value = ZERO;
     }
-    else if(pulse_length < MAX_ZERO) {
-        //Recieved frame marker pulse
-        bitVal = ZERO;
+    else if((pulse_length > (BIT_LEN_ONE_MS - MARGIN_MS))
+             && (pulse_length < (BIT_LEN_ONE_MS + MARGIN_MS))) {
+        bit_value = ONE;
     }
-    else if(pulse_length < MAX_ONE) {
-        //Recieved binary one pulse
-        bitVal = ONE;
+    else if((pulse_length > (BIT_LEN_FRAME_MS - MARGIN_MS))
+             && (pulse_length < (BIT_LEN_FRAME_MS + MARGIN_MS))) {
+        bit_value = FRAME;
     }
-    else if(pulse_length < MAX_FRAME){
-        //Recieved binary zero pulse
-        bitVal = FRAME;
+    else {
+        bit_value = ERROR;
     }
 
-    return bitVal;
+    return bit_value;
 }
 
 void process_frame(time_t *frame) {

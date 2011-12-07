@@ -33,6 +33,11 @@
 #define MAX_ONE 600
 #define MAX_ZERO 300
 
+#define BIT_LEN_ZERO_MS 200
+#define BIT_LEN_ONE_MS 500
+#define BIT_LEN_FRAME_MS 800
+#define MARGIN_MS 150
+
 //Definitions of values returned by bit_value()
 #define ERROR 3
 #define FRAME 2

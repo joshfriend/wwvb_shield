@@ -47,6 +47,14 @@ void receiveEvent(int howMany)
             Serial.println("DOUBLE SYNC MARKER");
             Serial3.println("DOUBLE SYNC MARKER");
         }
+        else if(c == 0xFB) {
+            Serial.println("PASSED VALIDATION");
+            Serial3.println("PASSED VALIDATION");
+        }
+        else if(c == 0xFA) {
+            Serial.println("FAILED VALIDATION");
+            Serial3.println("FAILED VALIDATION");
+        }
         else {
             Serial.print(c,HEX);
             Serial.print(" ");
