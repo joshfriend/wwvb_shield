@@ -1,4 +1,4 @@
-// Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+// Date and time functions using a MCP79410N RTC connected via I2C and Wire lib
 
 #include <Wire.h>
 #include "RTClib.h"
@@ -11,7 +11,7 @@ void setup () {
     Clock.begin();
     Clock.set_vbaten(0x01);
     //Clock.adjust(DateTime(__DATE__, __TIME__));
-    
+     
     /*
     if (! Clock.isrunning()) {
         Serial.println("RTC is NOT running!");
