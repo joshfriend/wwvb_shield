@@ -55,7 +55,7 @@ void receiveEvent(int howMany)
             Serial.println("FAILED VALIDATION");
             Serial3.println("FAILED VALIDATION");
         }
-        else {RTClib
+        else {
             Serial.print(c,HEX);
             Serial.print(" ");
             Serial3.print(c,HEX);
