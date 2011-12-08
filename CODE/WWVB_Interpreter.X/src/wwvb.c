@@ -99,26 +99,14 @@ uint8_t process_bit(uint16_t pulse_length) {
                 }
                 else if(frame_position == 59) {
                     frame_recieved_flag = 1;
-                    /*
-                    //Send debug data (frame mark detected)
-                    i2c_start();
-                    i2c_tx_byte(8);
-                    i2c_tx_byte(0xFC);
-                    i2c_tx_byte(decimal_to_bcd(wwvb.minutes));
-                    i2c_tx_byte(decimal_to_bcd(wwvb.hours));
-                    i2c_tx_byte(decimal_to_bcd(wwvb.day_of_year));
-                    i2c_tx_byte(decimal_to_bcd(wwvb.day_of_year >> 8));
-                    i2c_tx_byte(decimal_to_bcd(wwvb.year));
-                    i2c_halt();
-                    */
                 }
                 break;
     
             //Seconds bits...
             case 1:
                 if(bit_value == FRAME) {
-                    //Double mark detected in bitstream, reset position to 1
-                    frame_position = 1;
+                    //Double mark detected in bitstream, reset position to 0
+                    frame_position = 0;
                     clear_data(&wwvb);
                 }
                 else {
@@ -321,9 +309,9 @@ void process_frame(time_t *frame) {
     wwvb.date = get_day_of_month(wwvb);
     wwvb.day_of_week = get_day_of_week(wwvb);
 
-    //Copy data and convert to BCD for RTC
+    //Copy data for RTC
     frame->seconds = 0x80;
-    frame->minutes = wwvb.minutes;
+    frame->minutes = wwvb.minutes + 1;  //Frame is for previous minute
     frame->hours = wwvb.hours;
     frame->day_of_week = wwvb.day_of_week;
     frame->month = wwvb.month;

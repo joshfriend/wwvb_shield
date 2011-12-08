@@ -101,10 +101,23 @@ void main(void) {
                 i2c_tx_byte(8);
                 i2c_tx_byte(0xFB);
                 i2c_halt();
-                
+
+
                 //Format to BCD for RTC
                 time_to_bcd(&time);
-                
+
+                i2c_start();
+                i2c_tx_byte(8);
+                i2c_tx_byte(time.seconds);
+                i2c_tx_byte(time.minutes);
+                i2c_tx_byte(time.hours);
+                i2c_tx_byte(time.day_of_week);
+                i2c_tx_byte(time.date);
+                i2c_tx_byte(time.month);
+                i2c_tx_byte(time.year);
+                i2c_tx_byte(0xFF);
+                i2c_halt();
+
                 //Store position of register first
                 i2c_buffer[0] = 0x00;
     
@@ -118,6 +131,7 @@ void main(void) {
                 
                 //Push time update to RTC
                 i2c_tx(8, i2c_buffer, 9);
+                
             }
             else {
                 //Send debug data (failed validation)
