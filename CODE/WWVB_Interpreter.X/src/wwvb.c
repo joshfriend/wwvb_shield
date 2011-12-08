@@ -30,6 +30,18 @@ uint8_t frame_position = 0;
 //Variable to store WWVB time data as it is processed
 static time_t wwvb;
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Processes a bit recieved from the WWVB radio. A finite state machine
+ * implementation is used to keep track of frame position and evaluate the 
+ * meaning of each bit recieved.
+ *
+ * Parameters:
+ * pulse_length - the duration of the WWVB pulse in milliseconds
+ *
+ * Returns:
+ * The value of the bit decoded (0-3 for ZERO, ONE, FRAME, or ERROR)
+ -----------------------------------------------------------------------------*/
 uint8_t process_bit(uint16_t pulse_length) {
     static uint8_t prev_bit_value = 0;
     uint8_t bit_value = get_bit_value(pulse_length);
@@ -260,6 +272,16 @@ uint8_t process_bit(uint16_t pulse_length) {
     return bit_value;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Gets the value of the WWVB bit.
+ *
+ * Parameters:
+ * pulse_length - the duration of the WWVB pulse in milliseconds
+ *
+ * Returns:
+ * The value of the bit decoded (0-3 for ZERO, ONE, FRAME, or ERROR)
+ -----------------------------------------------------------------------------*/
 uint8_t get_bit_value(uint16_t pulse_length) {
     uint8_t bit_value = 0;
 
@@ -283,6 +305,16 @@ uint8_t get_bit_value(uint16_t pulse_length) {
     return bit_value;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Processes the data recieved and copies it to a new location.
+ *
+ * Parameters:
+ * *frame - Pointer reference to the location where the data will be copied to.
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void process_frame(time_t *frame) {
     //Process WWVB Date data
     wwvb.month = get_month(wwvb);
@@ -303,6 +335,16 @@ void process_frame(time_t *frame) {
     clear_data(&wwvb);
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Sets all values in a time_t structure back to 0
+ *
+ * Parameters:
+ * *frame - Pointer reference to time_t structure to be cleared
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void clear_data(time_t *frame) {
     frame->seconds = 0;
     frame->minutes = 0;

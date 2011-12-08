@@ -32,7 +32,7 @@ void i2c_noack(void);
 void i2c_wait(void);
 void i2c_tx_byte(uint8_t data);
 uint8_t i2c_send_next(void);
-uint8_t i2c_tx(uint8_t address, uint8_t *data, uint8_t count);
+void i2c_tx(uint8_t address, uint8_t *data, uint8_t count);
 uint8_t i2c_recieve(void);
 
 #endif

@@ -23,6 +23,20 @@
 //CPU Frequency
 #define FOSC 1000000UL
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Initializes the Timer1 peripheral on the PIC. The Chrono-tomic Arduino
+ * Shield uses the gate feature on RA4 to control this timer. 
+ * Gated count mode is enabled with polarity 0 to count when gate pin is LOW.
+ * Prescaler is set to FOSC/4 to enable the Timer to measure at least a 1 sec
+ * range required by WWVB interpreter algorithm.
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void timer1_init(void) {
     //Timer ON, 1/8 Prescaler, Source = FOSC/4, 2 second range
     TMR1ON = 1;
@@ -40,6 +54,17 @@ void timer1_init(void) {
     PEIE = 1;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Initializes the Timer2 peripheral on the PIC. This timer is setup to trigger
+ * an interrupt every millisecond for general timing purposes.
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void timer2_init(void) {
     //Timer2 ON, 1/1 prescaler = 4us per tick
     TMR2ON = 1;

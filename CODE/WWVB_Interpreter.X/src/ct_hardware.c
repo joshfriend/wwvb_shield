@@ -20,6 +20,17 @@
 #include "htc.h"
 #include "ct_hardware.h"
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Properly initializes the PIC IO hardware for use with the Chrono-tomic
+ * Arduino Shield.
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void io_setup(void) {
     //Turn ADC Functionality OFF
     ANSELA = ANSELC = 0;
@@ -40,6 +51,16 @@ void io_setup(void) {
     //WPUA |= 0x10;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Initializes falling edge pin-change interrupts on gated timer input (RA4).
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void pcint_setup(void) {
     //Enable negative edge pin change interrupt on RA4
     IOCAN4 = 1;

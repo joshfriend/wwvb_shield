@@ -22,14 +22,44 @@
 #include "RTC.h"
 #include "types.h"
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Converts an 8-bit unsigned decimal number to BCD
+ *
+ * Parameters:
+ * dec - the decimal number to be converted
+ *
+ * Returns:
+ * BCD formatted converted value
+ -----------------------------------------------------------------------------*/
 uint8_t decimal_to_bcd(uint8_t dec) {
     return (dec/10 * 16) + (dec % 10);
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Converts a BCD number to an 8-bit unsigned decimal number
+ *
+ * Parameters:
+ * BCD - the BCD number to be converted
+ *
+ * Returns:
+ * Decimal formatted converted value
+ -----------------------------------------------------------------------------*/
 uint8_t bcd_to_decimal(uint8_t bcd) {
     return ((bcd/16 * 10) + (bcd % 16));
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Converts a time_t structure to BCD for sending to an RTC
+ *
+ * Parameters:
+ * *time - Pointer reference to the time structure to be converted
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void time_to_bcd(time_t *time) {
     //Convert to BCD for RTC
     time->seconds = 0x80;
@@ -42,6 +72,16 @@ void time_to_bcd(time_t *time) {
     time->leap = decimal_to_bcd(time->leap);
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Sends commands over I2C to start the RTC clock
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void start_rtc(void) {
     //Start transmission
     i2c_start();
@@ -58,6 +98,16 @@ void start_rtc(void) {
     i2c_halt();
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Sends commands over I2C to stop the RTC clock
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void stop_rtc(void) {
     //Start transmission
     i2c_start();
@@ -74,6 +124,16 @@ void stop_rtc(void) {
     i2c_halt();
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Sends new time data to an RTC over the I2C bus
+ *
+ * Parameters:
+ * time - time_t structure containing time update to be sent to the RTC
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void set_rtc_time(time_t time) {
     //Start transmission
     i2c_start();
@@ -96,6 +156,16 @@ void set_rtc_time(time_t time) {
     i2c_halt();
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Gets the current time from the RTC
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * time_t structure containing time info recieved from RTC
+ -----------------------------------------------------------------------------*/
 time_t get_rtc_time(void) {
     time_t rtc_time;
     //Start transmission
@@ -136,6 +206,16 @@ time_t get_rtc_time(void) {
     return rtc_time;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Sends new commands over I2C to the control register of the RTC
+ *
+ * Parameters:
+ * New register value to set in RTC
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void rtc_output_ctrl(uint8_t data) {
     //Start transmission
     i2c_start();

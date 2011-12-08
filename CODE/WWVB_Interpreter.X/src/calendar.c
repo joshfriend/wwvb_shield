@@ -20,6 +20,16 @@
 #include "calendar.h"
 #include "types.h"
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Finds the current month using day-of-year and leapyear info
+ *
+ * Parameters:
+ * time - time_t structure containing time data
+ *
+ * Returns:
+ * Month number (1-12)
+ -----------------------------------------------------------------------------*/
 uint8_t get_month(time_t time) {
     if(time.day_of_year <= 31)
         return 1;
@@ -47,20 +57,41 @@ uint8_t get_month(time_t time) {
         return 12;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Finds the day of week from day-of-year
+ *
+ * Parameters:
+ * time - time_t structure containing time data
+ *
+ * Returns:
+ * Day of week in integer form (1-7) where 1 = Sunday, 7 = Saturday, etc.
+ -----------------------------------------------------------------------------*/
 uint8_t get_day_of_week(time_t time) {
 
     uint8_t d = get_day_of_month(time);
     uint8_t m = get_month(time);
     uint8_t y = time.year;
-
+	
+	//Sakamoto's method:
     // http://en.wikipedia.org/wiki/Weekday_determination#Sakamoto.27s_Method
     
     static uint8_t t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     y -= m < 3;
-    return (uint8_t)((y + y/4 - y/100 + y/400 + t[m-1] + d) % 7);
+    return (uint8_t)((y + y/4 - y/100 + y/400 + t[m-1] + d) % 7) + 1;
 
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Finds the day of month (date) given day-of-year
+ *
+ * Parameters:
+ * time - time_t structure containing time data
+ *
+ * Returns:
+ * Day of month in integer form (0-31)
+ -----------------------------------------------------------------------------*/
 uint8_t get_day_of_month(time_t time) {
     uint8_t m = get_month(time);
     uint16_t d = time.day_of_year;
@@ -74,6 +105,17 @@ uint8_t get_day_of_month(time_t time) {
     return d;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Gets the number of days in the given month
+ *
+ * Parameters:
+ * month - The current month (1-12)
+ * leap - 1 if it is a leap year, 0 if not.
+ *
+ * Returns:
+ * The number of days in the given month (28-31 epending on month and leapyear)
+ -----------------------------------------------------------------------------*/
 uint8_t days_in_month(uint8_t month, uint8_t leap){
     if(month == 2)
         return 28 + leap;
@@ -83,6 +125,16 @@ uint8_t days_in_month(uint8_t month, uint8_t leap){
         return 31;
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Checks if date info inside a time_t is valid
+ *
+ * Parameters:
+ * time - The time_t structure to be checked
+ *
+ * Returns:
+ * 1 if date is valid, 0 if not valid.
+ -----------------------------------------------------------------------------*/
 uint8_t validate(time_t time) {
     
     if(time.minutes > 59)

@@ -44,6 +44,20 @@ volatile uint8_t bit_recieved_flag = 0;
 //Buffer for I2C data
 uint8_t i2c_buffer[10] = {0};
 
+
+/*------------------------------------------------------------------------------
+ * Description:
+ * MAIN CODE LOOP
+ * Initializes harware peripherals
+ * Waits for WWVB processing functions and interrupts to set flags. Main then 
+ * calls the appropriate function to deal with these flags.
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void main(void) {
     //Setup main clock
     setup();
@@ -119,6 +133,18 @@ void main(void) {
     }
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Interrupt service routine for the PIC16F1824.
+ * Responsible for handling I2C, gated timer and Timer2 interrupt events.
+ * This ISR handles the timing of the WWVB radio input.
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void interrupt isr (void) {
     //MSSP interrupt event
     if(SSP1IE && SSP1IF) {
@@ -183,6 +209,17 @@ void interrupt isr (void) {
     }
 }
 
+/*------------------------------------------------------------------------------
+ * Description:
+ * Initializes the main oscilator hardware and interrupts
+ * Main clock frequency FOSC is set to 1 MHz
+ *
+ * Parameters:
+ * none
+ *
+ * Returns:
+ * none
+ -----------------------------------------------------------------------------*/
 void setup(void) {
     //Disable watchdog timer
     SWDTEN = 0;
