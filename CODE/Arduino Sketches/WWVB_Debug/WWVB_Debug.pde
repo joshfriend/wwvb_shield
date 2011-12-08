@@ -3,12 +3,16 @@
 
 RTC Clock;
 
+DateTime now;
+
 void setup() {
     Serial.begin(9600);
     Serial3.begin(9600);
     
     Clock.begin();
     Clock.set_vbaten(0x01);
+    
+    //Clock.adjust(DateTime(__DATE__, __TIME__));
     
     pinMode(7, OUTPUT);
     pinMode(8, OUTPUT);
@@ -24,7 +28,8 @@ void setup() {
 
 
 void  loop(){
-    delay(100);
+    now = Clock.now();
+    delay(5000);
 }
 
 // function that executes whenever data is received from master
@@ -48,8 +53,34 @@ void receiveEvent(int howMany)
             Serial3.println("DOUBLE SYNC MARKER");
         }
         else if(c == 0xFB) {
-            Serial.println("PASSED VALIDATION");
-            Serial3.println("PASSED VALIDATION");
+            Serial.println("PASSED VALIDATION @ ");
+            Serial3.println("PASSED VALIDATION @ ");
+    
+            Serial.print(now.year(), DEC);
+            Serial.print('/');
+            Serial.print(now.month(), DEC);
+            Serial.print('/');
+            Serial.print(now.day(), DEC);
+            Serial.print(' ');
+            Serial.print(now.hour(), DEC);
+            Serial.print(':');
+            Serial.print(now.minute(), DEC);
+            Serial.print(':');
+            Serial.print(now.second(), DEC);
+            Serial.println();
+            
+            Serial3.print(now.year(), DEC);
+            Serial3.print('/');
+            Serial3.print(now.month(), DEC);
+            Serial3.print('/');
+            Serial3.print(now.day(), DEC);
+            Serial3.print(' ');
+            Serial3.print(now.hour(), DEC);
+            Serial3.print(':');
+            Serial3.print(now.minute(), DEC);
+            Serial3.print(':');
+            Serial3.print(now.second(), DEC);
+            Serial3.println(); 
         }
         else if(c == 0xFA) {
             Serial.println("FAILED VALIDATION");
