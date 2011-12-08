@@ -53,8 +53,8 @@ void receiveEvent(int howMany)
             Serial3.println("DOUBLE SYNC MARKER");
         }
         else if(c == 0xFB) {
-            Serial.println("PASSED VALIDATION @ ");
-            Serial3.println("PASSED VALIDATION @ ");
+            Serial.print("PASSED VALIDATION @ ");
+            Serial3.print("PASSED VALIDATION @ ");
     
             Serial.print(now.year(), DEC);
             Serial.print('/');
@@ -65,8 +65,6 @@ void receiveEvent(int howMany)
             Serial.print(now.hour(), DEC);
             Serial.print(':');
             Serial.print(now.minute(), DEC);
-            Serial.print(':');
-            Serial.print(now.second(), DEC);
             Serial.println();
             
             Serial3.print(now.year(), DEC);
@@ -78,13 +76,46 @@ void receiveEvent(int howMany)
             Serial3.print(now.hour(), DEC);
             Serial3.print(':');
             Serial3.print(now.minute(), DEC);
-            Serial3.print(':');
-            Serial3.print(now.second(), DEC);
-            Serial3.println(); 
+            Serial3.println();
+            
+            digitalWrite(7,HIGH);
+            digitalWrite(8,HIGH);
+            delay(200);
+            digitalWrite(7,LOW);
+            digitalWrite(8,LOW);
         }
         else if(c == 0xFA) {
-            Serial.println("FAILED VALIDATION");
-            Serial3.println("FAILED VALIDATION");
+            Serial.print("FAILED VALIDATION @ ");
+            Serial3.print("FAILED VALIDATION @ ");
+            
+                
+            Serial.print(now.year(), DEC);
+            Serial.print('/');
+            Serial.print(now.month(), DEC);
+            Serial.print('/');
+            Serial.print(now.day(), DEC);
+            Serial.print(' ');
+            Serial.print(now.hour(), DEC);
+            Serial.print(':');
+            Serial.print(now.minute(), DEC);
+            Serial.println();
+            
+            Serial3.print(now.year(), DEC);
+            Serial3.print('/');
+            Serial3.print(now.month(), DEC);
+            Serial3.print('/');
+            Serial3.print(now.day(), DEC);
+            Serial3.print(' ');
+            Serial3.print(now.hour(), DEC);
+            Serial3.print(':');
+            Serial3.print(now.minute(), DEC);
+            Serial3.println();
+            
+            digitalWrite(9,HIGH);
+            digitalWrite(10,HIGH);
+            delay(200);
+            digitalWrite(9,LOW);
+            digitalWrite(10,LOW);
         }
         else {
             Serial.print(c,HEX);
