@@ -52,11 +52,13 @@ uint8_t process_bit(uint16_t pulse_length) {
         frame_position = 0;
     }
 
+#ifdef DEBUG
     //Send debug data (bit value)
     i2c_start();
     i2c_tx_byte(8);
     i2c_tx_byte(bit_value);
     i2c_halt();
+#endif
 
     //Check if error can be ignored
     if(bit_value == ERROR && !dont_care_bit[frame_position]) {
@@ -69,11 +71,13 @@ uint8_t process_bit(uint16_t pulse_length) {
             clear_data(&wwvb);
             frame_position = 0;
 
+#ifdef DEBUG
             //Send debug data (frame mark detected)
             i2c_start();
             i2c_tx_byte(8);
             i2c_tx_byte(0xFC);
             i2c_halt();
+#endif
         }
 
         switch(frame_position) {
@@ -90,12 +94,14 @@ uint8_t process_bit(uint16_t pulse_length) {
                     //Increment operation at end will set this to 0:
                     frame_position = -1;
                     clear_data(&wwvb);
-
+                    
+#ifdef DEBUG
                     //Send debug data (frame error)
                     i2c_start();
                     i2c_tx_byte(8);
                     i2c_tx_byte(0xFF);
                     i2c_halt();
+#endif
                 }
                 else if(frame_position == 59) {
                     frame_recieved_flag = 1;

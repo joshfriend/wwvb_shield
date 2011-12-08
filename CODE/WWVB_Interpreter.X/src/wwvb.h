@@ -23,7 +23,7 @@
 #include "types.h"
 
 //WWVB decoding algorithm parameters
-#define MAX_EDGES 5             //Must be at least 1
+#define MAX_EDGES 7             //Must be at least 1
 #define MIN_BIT_WIDTH_MS 975    //Minimum bit width
 #define BIT_TIMEOUT_MS 1100     //Bit width decode timout value
 

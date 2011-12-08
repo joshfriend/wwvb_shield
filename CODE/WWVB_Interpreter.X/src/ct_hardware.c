@@ -45,10 +45,10 @@ void io_setup(void) {
     TRISC |= 0x03;
 
     //Enable weak pull-ups
-    //nWPUEN = 0;
+    nWPUEN = 0;
 
     //Enable weak pull-up on RA4
-    //WPUA |= 0x10;
+    WPUA |= 0x10;
 }
 
 /*------------------------------------------------------------------------------

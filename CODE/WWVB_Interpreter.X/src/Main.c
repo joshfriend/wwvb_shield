@@ -85,22 +85,26 @@ void main(void) {
             bit_recieved_flag = 0;
         }
         if(frame_recieved_flag == 1) {
+#ifdef DEBUG
             //Send debug data (frame recieved)
             i2c_start();
             i2c_tx_byte(8);
             i2c_tx_byte(0xFE);
             i2c_halt();
+#endif
 
             //Get time data
             time_t time;
             process_frame(&time);
             
             if(validate(time)) {
+#ifdef DEBUG
                 //Send debug data (passed validation)
                 i2c_start();
                 i2c_tx_byte(8);
                 i2c_tx_byte(0xFB);
                 i2c_halt();
+#endif
 
 
                 //Format to BCD for RTC
@@ -118,27 +122,16 @@ void main(void) {
                 i2c_tx_byte(0xFF);
                 i2c_halt();
 
-                //Store position of register first
-                i2c_buffer[0] = 0x00;
-    
-                //Copy structure data into I2C buffer
-                uint8_t * time_ptr = &time;
-                uint8_t i;
-                for(i = 1; i <= 7; i++) {
-                    i2c_buffer[i] = *time_ptr++;
-                }
-                i2c_buffer[i] = 0xFF;
-                
-                //Push time update to RTC
-                i2c_tx(8, i2c_buffer, 9);
                 
             }
             else {
+#ifdef DEBUG
                 //Send debug data (failed validation)
                 i2c_start();
                 i2c_tx_byte(8);
                 i2c_tx_byte(0xFA);
                 i2c_halt();
+#endif
             }
 
             //Clear flag
