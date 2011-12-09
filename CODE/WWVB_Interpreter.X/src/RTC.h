@@ -37,6 +37,10 @@
 #define EEPROM_WRITE_ADDR 0xFE
 #define EEPROM_READ_ADDR 0xFF
 #endif
+#ifdef DEBUG
+#define RTC_WRITE_ADDR 0x08
+#define RTC_READ_ADDR 0x09
+#endif
 
 //Function Prototypes
 uint8_t decimal_to_bcd(uint8_t dec);

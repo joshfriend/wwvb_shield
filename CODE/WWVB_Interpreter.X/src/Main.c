@@ -88,7 +88,7 @@ void main(void) {
 #ifdef DEBUG
             //Send debug data (frame recieved)
             i2c_start();
-            i2c_tx_byte(8);
+            i2c_tx_byte(RTC_WRITE_ADDR);
             i2c_tx_byte(0xFE);
             i2c_halt();
 #endif
@@ -101,7 +101,7 @@ void main(void) {
 #ifdef DEBUG
                 //Send debug data (passed validation)
                 i2c_start();
-                i2c_tx_byte(8);
+                i2c_tx_byte(RTC_WRITE_ADDR);
                 i2c_tx_byte(0xFB);
                 i2c_halt();
 #endif
@@ -111,7 +111,8 @@ void main(void) {
                 time_to_bcd(&time);
 
                 i2c_start();
-                i2c_tx_byte(8);
+                //Slave address:
+                i2c_tx_byte(RTC_WRITE_ADDR);
                 i2c_tx_byte(time.seconds);
                 i2c_tx_byte(time.minutes);
                 i2c_tx_byte(time.hours);
@@ -119,7 +120,10 @@ void main(void) {
                 i2c_tx_byte(time.date);
                 i2c_tx_byte(time.month);
                 i2c_tx_byte(time.year);
+#ifdef DEBUG
+                //Debug code for new line
                 i2c_tx_byte(0xFF);
+#endif
                 i2c_halt();
 
                 
@@ -128,7 +132,7 @@ void main(void) {
 #ifdef DEBUG
                 //Send debug data (failed validation)
                 i2c_start();
-                i2c_tx_byte(8);
+                i2c_tx_byte(RTC_WRITE_ADDR);
                 i2c_tx_byte(0xFA);
                 i2c_halt();
 #endif

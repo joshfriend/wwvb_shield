@@ -55,7 +55,7 @@ uint8_t process_bit(uint16_t pulse_length) {
 #ifdef DEBUG
     //Send debug data (bit value)
     i2c_start();
-    i2c_tx_byte(8);
+    i2c_tx_byte(RTC_WRITE_ADDR);
     i2c_tx_byte(bit_value);
     i2c_halt();
 #endif
@@ -64,6 +64,13 @@ uint8_t process_bit(uint16_t pulse_length) {
     if(bit_value == ERROR && !dont_care_bit[frame_position]) {
         clear_data(&wwvb);
         frame_position = 0;
+#ifdef DEBUG
+        //Send debug data (frame error)
+        i2c_start();
+        i2c_tx_byte(RTC_WRITE_ADDR);
+        i2c_tx_byte(0xFF);
+        i2c_halt();
+#endif
     }
     else {
         if(bit_value == FRAME && prev_bit_value == FRAME) {
@@ -74,12 +81,23 @@ uint8_t process_bit(uint16_t pulse_length) {
 #ifdef DEBUG
             //Send debug data (frame mark detected)
             i2c_start();
-            i2c_tx_byte(8);
+            i2c_tx_byte(RTC_WRITE_ADDR);
             i2c_tx_byte(0xFC);
             i2c_halt();
 #endif
         }
-
+        //Prevent frame values from passed through where they shouldnt
+        if(bit_value == FRAME && !frame_bit[frame_position]) {
+            clear_data(&wwvb);
+            frame_position = 0;
+#ifdef DEBUG
+            //Send debug data (frame error)
+            i2c_start();
+            i2c_tx_byte(RTC_WRITE_ADDR);
+            i2c_tx_byte(0xFF);
+            i2c_halt();
+#endif
+        }
         switch(frame_position) {
             //Frame markers...
             case 0:
@@ -98,7 +116,7 @@ uint8_t process_bit(uint16_t pulse_length) {
 #ifdef DEBUG
                     //Send debug data (frame error)
                     i2c_start();
-                    i2c_tx_byte(8);
+                    i2c_tx_byte(RTC_WRITE_ADDR);
                     i2c_tx_byte(0xFF);
                     i2c_halt();
 #endif
