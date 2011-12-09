@@ -113,6 +113,8 @@ void main(void) {
                 i2c_start();
                 //Slave address:
                 i2c_tx_byte(RTC_WRITE_ADDR);
+                //Register address:
+                i2c_tx_byte(0x00);
                 i2c_tx_byte(time.seconds);
                 i2c_tx_byte(time.minutes);
                 i2c_tx_byte(time.hours);
