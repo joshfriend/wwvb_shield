@@ -118,6 +118,22 @@ uint8_t DateTime::dayOfWeek() const {
     return (day + 6) % 7; // Jan 1, 2000 is a Saturday, i.e. returns 6
 }
 
+DateTime DateTime::tz_adjust(int8_t utc_offset, uint32_t unixtime) {
+    DateTime tz_adjusted;
+    
+    //Check to see if utc offset is valid
+    if(utc_offset <= 12 && utc_offset >= -12) {
+        //Adjust time
+        tz_adjusted = DateTime(unixtime + (utc_offset * 3600L));
+    }
+    else {
+        //Return the same date passed with no adjustment
+        tz_adjusted = DateTime(unixtime);
+    }
+    
+    return tz_adjusted;
+}
+
 uint32_t DateTime::unixtime(void) const {
   uint32_t t;
   uint16_t days = date2days(yOff, m, d);
@@ -167,7 +183,7 @@ void RTC::set_vbaten(uint8_t state) {
 
 void RTC::adjust(const DateTime& dt) {
     Wire.beginTransmission(RTC_ADDRESS);
-    Wire.write((int)0);
+    Wire.write(0x00);
     Wire.write(bin2bcd(dt.second()) | 0x80);
     Wire.write(bin2bcd(dt.minute()));
     Wire.write(bin2bcd(dt.hour()));
@@ -175,13 +191,13 @@ void RTC::adjust(const DateTime& dt) {
     Wire.write(bin2bcd(dt.day()));
     Wire.write(bin2bcd(dt.month()));
     Wire.write(bin2bcd(dt.year() - 2000));
-    Wire.write((int)0);
+    Wire.write(0x00);
     Wire.endTransmission();
 }
 
 DateTime RTC::now() {
     Wire.beginTransmission(RTC_ADDRESS);
-    Wire.write((int)0);	
+    Wire.write(0x00);	
     Wire.endTransmission();
     
     Wire.requestFrom(RTC_ADDRESS, 7);
@@ -229,7 +245,7 @@ void RTC::set_vbaten(uint8_t state) {
 void RTC::adjust(const DateTime& dt) {
     Wire.beginTransmission(RTC_ADDRESS);
     //Wire library requires int for 0 address
-    Wire.send((int)0);
+    Wire.send(0x00);
     Wire.send(bin2bcd(dt.second()) | 0x80);
     Wire.send(bin2bcd(dt.minute()));
     Wire.send(bin2bcd(dt.hour()));
@@ -239,13 +255,13 @@ void RTC::adjust(const DateTime& dt) {
     Wire.send(bin2bcd(dt.month()));
     Wire.send(bin2bcd(dt.year() - 2000));
     //Disable ALL options in control register
-    Wire.send((int)0);
+    Wire.send(0x00);
     Wire.endTransmission();
 }
 
 DateTime RTC::now() {
     Wire.beginTransmission(RTC_ADDRESS);
-    Wire.send((int)0);	
+    Wire.send(0x00);	
     Wire.endTransmission();
     
     Wire.requestFrom(RTC_ADDRESS, 7);

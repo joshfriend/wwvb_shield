@@ -36,7 +36,6 @@ void  loop(){
 // this function is registered as an event, see setup()
 void receiveEvent(int howMany)
 {
-  //Serial.println("Recieved from PIC:");
     while(Wire.available()) // loop through all but the last
     {
         unsigned char c = Wire.receive(); // receive byte as a character
@@ -66,7 +65,7 @@ void receiveEvent(int howMany)
             Serial.print(':');
             Serial.print(now.minute(), DEC);
             Serial.println();
-            
+
             Serial3.print(now.year(), DEC);
             Serial3.print('/');
             Serial3.print(now.month(), DEC);
@@ -99,7 +98,7 @@ void receiveEvent(int howMany)
             Serial.print(':');
             Serial.print(now.minute(), DEC);
             Serial.println();
-            
+
             Serial3.print(now.year(), DEC);
             Serial3.print('/');
             Serial3.print(now.month(), DEC);
@@ -110,6 +109,7 @@ void receiveEvent(int howMany)
             Serial3.print(':');
             Serial3.print(now.minute(), DEC);
             Serial3.println();
+            
             
             digitalWrite(9,HIGH);
             digitalWrite(10,HIGH);

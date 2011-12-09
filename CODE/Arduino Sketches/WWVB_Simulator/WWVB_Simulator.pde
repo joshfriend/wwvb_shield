@@ -85,21 +85,21 @@ byte clockData[60] = {                // transmitted data 2 Mark, 1 or 0
 
 void setup() {
   Serial.begin(9600);
+  
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+    
   Serial.println("\nRESET");
   Wire.begin(4);                // join i2c bus with address #4
   Wire.onReceive(receiveEvent); // register event
   pinMode(clockOutPin, OUTPUT);      // set pin digital output
-  pinMode(22,INPUT);
 }
 
 
 void  loop(){
-  for(int i = 0; i < bitCount; i++) {
-    if(digitalRead(22) == HIGH){
-        while(digitalRead(22) == HIGH);
-        i = 56;
-    }
-    
+  for(int i = 0; i < bitCount; i++) {    
     if (clockData[i] == 2) { 
       genMark(); 
     } 
@@ -109,39 +109,75 @@ void  loop(){
     else { 
       genZero(); 
     }
+    /*
     Serial.println();
     Serial.print(i);
     Serial.print("   ");
     Serial.print(clockData[i],DEC);
+    */
   }
 }
 
-// function that executes whenever data is received from master
-// this function is registered as an event, see setup()
 void receiveEvent(int howMany)
 {
   //Serial.println("Recieved from PIC:");
-  while(Wire.available()) // loop through all but the last
-  {
-    unsigned char c = Wire.receive(); // receive byte as a character
-    if(c == 0xFF) {
+    while(Wire.available()) // loop through all but the last
+    {
+        unsigned char c = Wire.read(); // receive byte as a character
+        if(c == 0xFF) {
             Serial.println();
+        }
+        else if(c == 0xFE) {
+            Serial.println("FRAME: ");
+        }
+        else if(c == 0xFC) {
+            Serial.println("DOUBLE SYNC MARKER");
+        }
+        else if(c == 0xFB) {
+            Serial.print("PASSED VALIDATION @ ");
+            
+            digitalWrite(7,HIGH);
+            digitalWrite(8,HIGH);
+            delay(200);
+            digitalWrite(7,LOW);
+            digitalWrite(8,LOW);
+        }
+        else if(c == 0xFA) {
+            Serial.print("FAILED VALIDATION @ ");
+            
+            digitalWrite(9,HIGH);
+            digitalWrite(10,HIGH);
+            delay(200);
+            digitalWrite(9,LOW);
+            digitalWrite(10,LOW);
+        }
+        else {
+            Serial.print(c,HEX);
+            Serial.print(" ");
+            switch(c) {
+                case 0:
+                    digitalWrite(7, HIGH);
+                    delay(200);
+                    digitalWrite(7,LOW);
+                    break;
+                case 1:
+                    digitalWrite(8, HIGH);
+                    delay(200);
+                    digitalWrite(8,LOW);
+                    break;
+                case 2:
+                    digitalWrite(9, HIGH);
+                    delay(200);
+                    digitalWrite(9,LOW);
+                    break;
+                case 3:
+                    digitalWrite(10, HIGH);
+                    delay(200);
+                    digitalWrite(10,LOW);
+                    break;
+            }
+        }
     }
-    else if(c == 0xFE) {
-        Serial.println("FRAME: ");
-    }
-    else if(c == 0xFC) {
-        Serial.print("DOUBLE SYNC MARKER");
-    }
-    else if(c == 0xFB) {
-        Serial.print("PASSED VALIDATION");
-    }
-    else {
-        Serial.print("   ");
-        Serial.print(c,HEX);
-        Serial.print("*  ");
-    }  
-  }
 }
 
 void genMark() {                      //generate 800ms Mark
